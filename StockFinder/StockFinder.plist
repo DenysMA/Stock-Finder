@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>minLineSpacing</key>
+	<string>12</string>
+	<key>maxLineSpacing</key>
+	<string>16</string>
+	<key>minFontSize</key>
+	<string>14</string>
+	<key>maxFontSize</key>
+	<string>20</string>
+	<key>stockUp</key>
+	<string>0,169,64,1</string>
+	<key>stockDown</key>
+	<string>210,0,0,1</string>
+	<key>StockDetail</key>
+	<array>
+		<dict>
+			<key>field</key>
+			<string>open</string>
+			<key>title</key>
+			<string>Open</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>previousClose</string>
+			<key>title</key>
+			<string>Prev Close</string>
+		</dict>
+		<dict>
+			<key>separator</key>
+			<string>-</string>
+			<key>field</key>
+			<string>lowest,highest</string>
+			<key>title</key>
+			<string>Day&apos;s Range</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>wkStartRange,wkEndRange</string>
+			<key>title</key>
+			<string>52wk Range</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>bid,bidSize</string>
+			<key>separator</key>
+			<string>x</string>
+			<key>title</key>
+			<string>Bid</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>ask,askSize</string>
+			<key>separator</key>
+			<string>x</string>
+			<key>title</key>
+			<string>Ask</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>volume</string>
+			<key>title</key>
+			<string>Volume</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>volumeAvg</string>
+			<key>title</key>
+			<string>Avg Vol (3m)</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>yearTarget</string>
+			<key>title</key>
+			<string>1y Target Est</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>mktCap</string>
+			<key>title</key>
+			<string>Market Cap</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>beta</string>
+			<key>title</key>
+			<string>Beta</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>pe</string>
+			<key>title</key>
+			<string>P/E (ttm)</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>earningsDate</string>
+			<key>title</key>
+			<string>Earnings Date</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>eps</string>
+			<key>title</key>
+			<string>EPS (ttm)</string>
+		</dict>
+		<dict>
+			<key>field</key>
+			<string>divYield</string>
+			<key>title</key>
+			<string>Div &amp; Yield</string>
+		</dict>
+	</array>
+</dict>
+</plist>
