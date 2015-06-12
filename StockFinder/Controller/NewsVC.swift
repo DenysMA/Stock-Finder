@@ -88,7 +88,11 @@ class NewsVC: UIViewController {
         
         if let news = newsDS.getObjectForPoint(shareButtonPosition) {
          
-            let activity = UIActivityViewController(activityItems: [news.title ,NSURL(string: news.link)!, news.newsImage!], applicationActivities: nil)
+            var items: [AnyObject] = [news.title , NSURL(string: news.link)!]
+            if let image = news.newsImage {
+                items.append(image)
+            }
+            let activity = UIActivityViewController(activityItems: items, applicationActivities: nil)
             activity.popoverPresentationController?.sourceView = sender
             activity.excludedActivityTypes = [UIActivityTypeAssignToContact]
             activity.completionWithItemsHandler = { (activityType, completed, returnItems, activityError ) in
