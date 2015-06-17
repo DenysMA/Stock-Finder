@@ -47,6 +47,8 @@ class Stock: NSManagedObject {
         static let watched = "watched"
         static let mainIndex = "mainIndex"
         static let region = "region"
+        static let chgIndicator = "chgIndicator"
+        static let downInd = "DOWN"
     }
     
     // Managed variables
@@ -83,8 +85,8 @@ class Stock: NSManagedObject {
     @NSManaged var stockDate: String
     @NSManaged var watched: Bool
     @NSManaged var mainIndex: Bool
-    @NSManaged var region: Int
-    @NSManaged var order: Int
+    @NSManaged var region: Int64
+    @NSManaged var order: Int64
     @NSManaged var company: Company
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -137,8 +139,11 @@ class Stock: NSManagedObject {
         mktCap = dictionary[Keys.marketCap] as? String ?? mktCap
         volume = dictionary[Keys.volume] as? String ?? volume
         volumeAvg = dictionary[Keys.volumeAvg] as? String ?? volumeAvg
-        region = dictionary[Keys.region] as? Int ?? region
         stockDate = dictionary[Keys.date] as? String ?? ""
+        
+        if let region = dictionary[Keys.region]?.integerValue {
+            self.region = Int64(region)
+        }
         
         if let watched = dictionary[Keys.watched] as? Bool {
             self.watched = watched
@@ -155,7 +160,7 @@ class Stock: NSManagedObject {
     }
     
     // MARK: - Get next order for a stock in watch list
-    func getStockOrder() -> Int {
+    func getStockOrder() -> Int64 {
         
         let error: NSErrorPointer = nil
         let fetchRequest = NSFetchRequest(entityName: "Stock")

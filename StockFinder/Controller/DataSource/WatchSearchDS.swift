@@ -50,6 +50,7 @@ class WatchSearchDS: CollectionBaseDS, UICollectionViewDelegate {
             
             // Set loading state
             owner?.state = State.Loading
+            owner?.message.hidden = true
             
             searchTask = YahooClient.sharedInstance().getQuotes(",".join(symbols)){ results, error in
                 
@@ -100,6 +101,7 @@ class WatchSearchDS: CollectionBaseDS, UICollectionViewDelegate {
             // Set state and notify delegate
             owner?.error = nil
             owner?.state = State.Loaded
+            owner?.message.hidden = false
             owner?.delegate?.didFinishLoading()
         }
     }

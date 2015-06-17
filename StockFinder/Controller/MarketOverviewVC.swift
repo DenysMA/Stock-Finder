@@ -35,11 +35,7 @@ class MarketOverviewVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set image gradient layer
-        gradientLayer.colors = [UIColor.blackColor().CGColor, UIColor.clearColor().CGColor, UIColor.blackColor().CGColor]
-        imageView.layer.insertSublayer(gradientLayer, atIndex: 0)
         activityHeight.constant = 0
-        
         // Set estimated size for collection
         let marketFlowLayout = marketCollection.collectionViewLayout as! UICollectionViewFlowLayout
         marketFlowLayout.estimatedItemSize = CGSizeMake(184, 30)
@@ -57,7 +53,6 @@ class MarketOverviewVC: UIViewController {
         indexFlowLayout.itemSize = CGSize(width: UIScreen.mainScreen().bounds.width * 0.30, height: 50)
         indexFlowLayout.invalidateLayout()
         indexCollection.updateConstraints()
-        gradientLayer.frame = imageView.bounds
     }
     
     // MARK: - Load content
@@ -95,24 +90,12 @@ class MarketOverviewVC: UIViewController {
     func showIndicator() {
         
         if !activityIndicator.isAnimating() {
-            view.layoutIfNeeded()
-            activityHeight.constant = 37
-            UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { self.view.layoutIfNeeded() }) { finished in
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.activityIndicator.startAnimating()
-                }
-            }
+            activityIndicator.startAnimating()
         }
     }
     
     func hideIndicator() {
-        view.layoutIfNeeded()
-        activityHeight.constant = 0
-        UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { self.view.layoutIfNeeded() }) { finished in
-            dispatch_async(dispatch_get_main_queue()) {
-                self.activityIndicator.stopAnimating()
-            }
-        }
+        activityIndicator.stopAnimating()
     }
     
 }

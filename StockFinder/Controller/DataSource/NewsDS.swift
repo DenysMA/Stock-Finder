@@ -13,6 +13,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
     
     private var pendingOperations = PendingOperations()
     private var reuseCell = "newsCell"
+    private var emptyDS = EmptyDS()
     weak var owner: NewsVC? {
         didSet {
             
@@ -26,6 +27,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
             }
             
             // Set up fetchController
+            NSFetchedResultsController.deleteCacheWithName("News")
             fetchedResultsController.delegate = self
             fetchedResultsController.performFetch(nil)
         }
@@ -36,7 +38,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
         return CoreDataStackManager.sharedInstance().managedObjectContext!
     }
     
-    func loadData(symbol: String?) {
+    func loadData(symbol: String? = nil) {
         
         // Perform fetch results
         let newsType: NewsType
@@ -45,7 +47,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
         // If there is a symbol, search for company news
         if let symbol = symbol {
             newsType = NewsType.CompanyNews
-            predicate = NSPredicate(format: "type == %i and symbol == %@", newsType.rawValue, symbol)
+            predicate = NSPredicate(format: "symbol == %@", symbol)
         }
         else {
             // Search Top News
@@ -54,6 +56,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
         }
         
         // Update predicate
+        NSFetchedResultsController.deleteCacheWithName("News")
         fetchedResultsController.fetchRequest.predicate = predicate
         fetchedResultsController.performFetch(nil)
         owner?.newsTableView.reloadData()
@@ -76,23 +79,46 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
                 if let results = results {
                     dispatch_async(dispatch_get_main_queue()){
                         
+                        self.owner?.newsTableView.dataSource = self
+                        self.owner?.newsTableView.delegate = self
+                        self.owner?.newsTableView.reloadData()
+                        
+                        let guids = results.map() {
+                            $0[News.Keys.guid] as! String
+                        }
+                        let items = self.searchForItems(guids)
+                        
                         for dictionary in results {
                             
                             // Check if news already exists
                             let guid = dictionary[News.Keys.guid] as! String
-                            let items = self.fetchedResultsController.fetchedObjects as! [News]
                             let results = items.filter() { $0.guid == guid }
-                            
                             if results.isEmpty {
-                                // Create news object
+                                // Create news object                                
                                 let newsItem = News(dictionary: dictionary, context: self.sharedContext)
                                 newsItem.newsType = newsType
                                 newsItem.symbol = symbol ?? ""
+                            }
+                            else {
+                                let news = results.first!
+                                if news.isContentMainSource && news.source.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).isEmpty {
+                                    YahooClient.sharedInstance().prefetchMediaForNews(news)
+                                }
                             }
                         }
                         
                         // Save context and upate status
                         CoreDataStackManager.sharedInstance().saveContext()
+                        self.owner?.error = nil
+                        self.owner?.state = State.Loaded
+                        self.owner?.delegate?.didFinishLoading()
+                    }
+                }
+                else {
+                    dispatch_async(dispatch_get_main_queue()){
+                        self.owner?.newsTableView.dataSource = self.emptyDS
+                        self.owner?.newsTableView.delegate = self.emptyDS
+                        self.owner?.newsTableView.reloadData()
                         self.owner?.error = nil
                         self.owner?.state = State.Loaded
                         self.owner?.delegate?.didFinishLoading()
@@ -108,12 +134,13 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
         // Create fetch request
         let fetchRequest = NSFetchRequest(entityName: "News")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        fetchRequest.fetchBatchSize = 10
         
         // Create fetchresults controller
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
             managedObjectContext: self.sharedContext,
             sectionNameKeyPath: nil,
-            cacheName: nil)
+            cacheName: "News")
         
         return fetchedResultsController
         
@@ -146,7 +173,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
         newsCell.newsImage.image = placeholderImage
         newsCell.titleLabel.text = newsItem.title
         newsCell.summaryLabel.text = newsItem.summary
-        newsCell.sourceLabel.text = newsItem.source.uppercaseString
+        newsCell.sourceLabel.text = (newsItem.source ?? "").uppercaseString
         newsCell.dateLabel.text = Formatter.getStringTimeFromDate(newsItem.date!)
         newsCell.playButton.hidden = newsItem.videoURL == nil
         
@@ -156,7 +183,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
             switch newsItem.state {
                 
             case .Failed:
-                println("failed")
+                println("download image failed")
             case .New:
                 startDownloadForRecord(indexPath, newsItem: newsItem)
             case .Downloaded:
@@ -269,4 +296,20 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedRes
         }
         return nil
     }
+    
+    // MARK: - Retrieve news item from persisten store
+    func searchForItems(guidArray : [String]) -> [News] {
+        
+        let error: NSErrorPointer = nil
+        let fetchRequest = NSFetchRequest(entityName: "News")
+        fetchRequest.predicate = NSPredicate(format: "guid in %@", guidArray)
+        fetchRequest.includesSubentities = false
+        let results = sharedContext.executeFetchRequest(fetchRequest, error: error)
+        // Check for Errors
+        if error != nil {
+            println("Error in fectchWatchList(): \(error)")
+        }
+        return results as? [News] ?? [News]()
+    }
+    
 }

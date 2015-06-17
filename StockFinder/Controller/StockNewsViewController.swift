@@ -28,7 +28,6 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
         
         // Set up refresh control
         refreshControl = UIRefreshControl()
-        refreshControl?.backgroundColor = UIColor.blackColor()
         refreshControl?.addTarget(self, action: "loadPresentation", forControlEvents: UIControlEvents.ValueChanged)
         refreshControl?.layer.zPosition = tableView.backgroundView!.layer.zPosition + 1
         title = "Company News"
@@ -54,8 +53,9 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
     func loadPresentation() {
         
         refreshControl?.beginRefreshing()
-        var newsType = NewsType.CompanyNews
-        news.loadNews(newsType, symbol: stock.symbol)
+        
+        // Load company news
+        news.loadNews(symbol: stock.symbol)
     }
     
     // MARK: - SearchView Delegate

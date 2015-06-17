@@ -137,6 +137,7 @@ class YahooClient: Client {
         let responseFilter: [ParameterFilter] = [
             ParameterFilter(attributeContent: "yfs_l84", elementName: "content", alias: Stock.Keys.price),
             ParameterFilter(attributeContent: "yfs_c63", elementName: "content", alias: Stock.Keys.change),
+            ParameterFilter(attributeContent: "yfs_c63", elementName: "img.alt", alias: Stock.Keys.chgIndicator),
             ParameterFilter(attributeContent: "yfs_p43", elementName: "content", alias: Stock.Keys.changeAvg),
             ParameterFilter(attributeContent: "time_rtq", elementName: "span.span.content", alias: Stock.Keys.date),
             ParameterFilter(attributeContent: "yfs_l86", elementName: "content", alias: Stock.Keys.priceAH),
@@ -179,7 +180,13 @@ class YahooClient: Client {
             }
             else if let result = result as? [String: AnyObject] {
                 
-                if let results = DataFilter.getStringValuesFromDictionary(result, filters: responseFilter) as? [String: AnyObject] {
+                if var results = DataFilter.getStringValuesFromDictionary(result, filters: responseFilter) as? [String: AnyObject] {
+                    
+                    if let chgIndicator = results[Stock.Keys.chgIndicator] as? String {
+                        let multiplier: Float = chgIndicator.uppercaseString == Stock.Keys.downInd ? -1 : 1
+                        results[Stock.Keys.change] = (results[Stock.Keys.change]!.floatValue * multiplier)
+                        results[Stock.Keys.changeAvg] = (results[Stock.Keys.changeAvg]!.floatValue * multiplier)
+                    }
                     completionHandler(results: results, error: nil)
                 }
                 else {
@@ -257,10 +264,11 @@ class YahooClient: Client {
                         completionHandler(results: items, error: nil)
                         return
                     }
+                    // No results found
+                    completionHandler(results: nil, error: nil)
+                    return
                 }
-                else {
-                    completionHandler(results: nil, error: "Error reading information from the server")
-                }
+                completionHandler(results: nil, error: "Error reading information from the server")
             }
         }
     }

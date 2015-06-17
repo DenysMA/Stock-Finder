@@ -39,11 +39,11 @@ class News: NSManagedObject {
     @NSManaged var content: NSData?
     @NSManaged var link: String
     @NSManaged var symbol: String?
-    @NSManaged var type: Int
+    @NSManaged var type: Int64
     @NSManaged var summary: String
     @NSManaged var imageURL: String?
     @NSManaged var videoURL: String?
-    @NSManaged var imageState: Int
+    @NSManaged var imageState: Int64
     @NSManaged var date: NSDate?
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -68,9 +68,13 @@ class News: NSManagedObject {
         title = dictionary[Keys.title] as! String
         link = dictionary[Keys.link] as! String
         summary = dictionary[Keys.summary] as? String ?? ""
+        
+        if let stringLink = link.componentsSeparatedByString("*").last {
+            link = stringLink
+        }
+        
         if let pubDate = dictionary[Keys.date] as? String {
             date = Formatter.getDateFromString(pubDate)
-            println(date)
         }
         YahooClient.sharedInstance().prefetchMediaForNews(self)
         
@@ -91,6 +95,13 @@ class News: NSManagedObject {
         get {
             return self.content != nil
         }
+    }
+    
+    var isContentMainSource: Bool {
+        if let range = link.rangeOfString(mainSource, options: NSStringCompareOptions.CaseInsensitiveSearch, range: nil, locale: nil) {
+            return true
+        }
+        return false
     }
     
     var newsImage: UIImage? {
@@ -133,9 +144,9 @@ class News: NSManagedObject {
 
 // MARK: - Image State and News Type Enums
 
-enum ImageState: Int {
+enum ImageState: Int64 {
     case New=0, Downloaded, Failed
 }
-enum NewsType: Int {
+enum NewsType: Int64 {
     case TopNews, CompanyNews, PressRelease
 }

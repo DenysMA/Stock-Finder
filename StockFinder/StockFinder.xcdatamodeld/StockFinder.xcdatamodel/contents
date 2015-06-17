@@ -17,14 +17,14 @@
         <attribute name="credits" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="guid" attributeType="String" defaultValueString="0" indexed="YES" syncable="YES"/>
-        <attribute name="imageState" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="imageState" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="link" attributeType="String" defaultValueString=" " syncable="YES"/>
         <attribute name="source" attributeType="String" defaultValueString=" " syncable="YES"/>
         <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="symbol" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
-        <attribute name="type" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="videoURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="watched" optional="YES" attributeType="Boolean" syncable="YES"/>
     </entity>
@@ -49,12 +49,12 @@
         <attribute name="mainIndex" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="mktCap" attributeType="String" defaultValueString="NA" syncable="YES"/>
         <attribute name="open" attributeType="String" defaultValueString="NA" syncable="YES"/>
-        <attribute name="order" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="order" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="pe" attributeType="String" defaultValueString="NA" syncable="YES"/>
         <attribute name="previousClose" attributeType="String" defaultValueString="NA" syncable="YES"/>
         <attribute name="price" attributeType="String" defaultValueString="0" syncable="YES"/>
         <attribute name="priceAH" attributeType="String" defaultValueString="NA" syncable="YES"/>
-        <attribute name="region" attributeType="Integer 32" defaultValueString="-1" syncable="YES"/>
+        <attribute name="region" attributeType="Integer 64" defaultValueString="-1" syncable="YES"/>
         <attribute name="stockDate" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="symbol" attributeType="String" syncable="YES"/>
         <attribute name="type" attributeType="String" defaultValueString="Index" syncable="YES"/>

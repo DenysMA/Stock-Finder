@@ -48,9 +48,9 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         configureHeader()
         
         // Set up refresh control
-        refreshControl = UIRefreshControl()
+        refreshControl = CustomRefreshControl()
         refreshControl?.addTarget(self, action: "loadContent", forControlEvents: UIControlEvents.ValueChanged)
-        
+        refreshControl?.layer.zPosition = headerView.layer.zPosition + 1
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -68,15 +68,14 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         updateHeaderView()
     }
     
-    
     // MARK: - Load view controller content
     
     func loadContent() {
     
-        marketOverview.showIndicator()
+        refreshControl?.beginRefreshing()
         marketOverview.loadMarketInfo()
         watchList.loadStockInfo()
-        news.loadNews(NewsType.TopNews, symbol: nil)
+        news.loadNews()
     }
     
     // Update background cell
@@ -102,8 +101,8 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
             watchListHeight.constant = watchList.size.height
             newsHeight.constant = newsSize.height
             tableView.endUpdates()
-            marketOverview.hideIndicator()
             refreshControl?.endRefreshing()
+            marketOverview.hideIndicator()
             if news.size != newsSize {
                 didFinishLoading()
             }
@@ -172,7 +171,6 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         let headerHeight = ScreenSettings.sizeForOrientation(UIInterfaceOrientation.Portrait).height / 3
         tableView.tableHeaderView = nil
         tableView.addSubview(headerView)
-        tableView.sendSubviewToBack(headerView)
         tableView.contentInset = UIEdgeInsets(top: headerHeight, left: 0, bottom: 0, right: 0)
         tableView.contentOffset = CGPoint(x: 0, y: -headerHeight)
         updateHeaderView()
@@ -188,12 +186,17 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
             headerRect.size.height = -tableView.contentOffset.y
         }
         headerView.frame = headerRect
+
     }
     
     // MARK: - Scroll Delegate
     
     override func scrollViewDidScroll(scrollView: UIScrollView) {
         updateHeaderView()
+    }
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0
     }
     
     // MARK: - Navigation

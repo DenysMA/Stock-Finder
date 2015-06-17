@@ -16,7 +16,7 @@ class IndexMarketDS: CollectionBaseDS, UICollectionViewDelegate {
     weak var owner: MarketOverviewVC? {
         didSet {
             // Set predicate and descriptors
-            let predicate = NSPredicate(format: "mainIndex == true and region == %i", owner!.regionControl.selectedSegmentIndex)
+            let predicate = NSPredicate(format: "mainIndex == true and region == %lg", Int64(owner!.regionControl.selectedSegmentIndex))
             let sortDescriptors = [NSSortDescriptor(key: "symbol", ascending: true)]
             setUpDataSourceForCollection(owner!.indexCollection, entityName: "Stock", predicate: predicate, sortDescriptors: sortDescriptors)
             owner?.indexCollection.delegate = self
@@ -46,7 +46,7 @@ class IndexMarketDS: CollectionBaseDS, UICollectionViewDelegate {
     // Update predicate
     func updatePredicate() {
         
-        let predicate = NSPredicate(format: "mainIndex == true and region == %i", self.owner!.regionControl.selectedSegmentIndex)
+        let predicate = NSPredicate(format: "mainIndex == true and region == %lg", Int64(self.owner!.regionControl.selectedSegmentIndex))
         updatePredicate(predicate)
     }
     

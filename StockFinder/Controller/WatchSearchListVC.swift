@@ -18,6 +18,7 @@ protocol WatchListDelegate {
 class WatchSearchListVC: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var message: UILabel!
     
     internal var delegate: WatchListDelegate?
     internal var state = State.Initiated
@@ -31,6 +32,7 @@ class WatchSearchListVC: UIViewController {
     private var currentStock: Stock?
     private var newStockPosition: Stock?
     private var translation = CGPointZero
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +44,9 @@ class WatchSearchListVC: UIViewController {
     // Collection view content size
     var size: CGSize {
         get {
-            return collectionView.collectionViewLayout.collectionViewContentSize()
+            let messageHeight: CGFloat = message.hidden ? 0 : message.sizeThatFits(CGSizeZero).height
+            return CGSizeMake(collectionView.collectionViewLayout.collectionViewContentSize().width ,
+                collectionView.collectionViewLayout.collectionViewContentSize().height + messageHeight)
         }
     }
     
@@ -82,7 +86,7 @@ class WatchSearchListVC: UIViewController {
         // Save changes
         CoreDataStackManager.sharedInstance().saveContext()
         // Call delegate to refresh parent controller
-        delegate?.didFinishLoading()
+        loadStockInfo()
     }
     
     // MARK: - Swipe Item to Delete
@@ -218,7 +222,7 @@ class WatchSearchListVC: UIViewController {
     }
     
     // MARK: - Update order
-    func updateStockOrder(stock: Stock, newOrder: Int) {
+    func updateStockOrder(stock: Stock, newOrder: Int64) {
         var stocks = watchSearchCollectionDS.fetchedResultsController.fetchedObjects! as! [Stock]
         var filterValidation: (stock: Stock) -> (Bool)
         var filteredStocks: [Stock]!

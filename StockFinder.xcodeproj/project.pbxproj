@@ -36,6 +36,7 @@
 		9A3B52A01AF8717500F6959E /* NewsDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B529F1AF8717500F6959E /* NewsDS.swift */; };
 		9A5517BB1B04D7B7008D64BB /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5517BA1B04D7B7008D64BB /* SearchViewController.swift */; };
 		9A5E75251B17A42000F33E93 /* EmptyDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5E75241B17A42000F33E93 /* EmptyDS.swift */; };
+		9A6339B41B2FCC6B0090D978 /* CustomRefreshControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6339B31B2FCC6B0090D978 /* CustomRefreshControl.swift */; };
 		9AA8C4B61AFA8A070092F70E /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA8C4B51AFA8A070092F70E /* News.swift */; };
 		9AA8C4B81AFA8C630092F70E /* NewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA8C4B71AFA8C630092F70E /* NewsTableViewCell.swift */; };
 		9AA8C4BA1AFAA9050092F70E /* NewsDisplayVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA8C4B91AFAA9050092F70E /* NewsDisplayVC.swift */; };
@@ -103,6 +104,7 @@
 		9A3B529F1AF8717500F6959E /* NewsDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsDS.swift; sourceTree = "<group>"; };
 		9A5517BA1B04D7B7008D64BB /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		9A5E75241B17A42000F33E93 /* EmptyDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyDS.swift; sourceTree = "<group>"; };
+		9A6339B31B2FCC6B0090D978 /* CustomRefreshControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomRefreshControl.swift; sourceTree = "<group>"; };
 		9AA8C4B51AFA8A070092F70E /* News.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
 		9AA8C4B71AFA8C630092F70E /* NewsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsTableViewCell.swift; sourceTree = "<group>"; };
 		9AA8C4B91AFAA9050092F70E /* NewsDisplayVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsDisplayVC.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				9AE389861B0AA45C002ACE6C /* WatchCollectionViewCell.swift */,
 				9A263EC41B1CD9CB002CDAF7 /* StockDetailViewCell.swift */,
 				9A263ED81B217D4E002CDAF7 /* SFView.swift */,
+				9A6339B31B2FCC6B0090D978 /* CustomRefreshControl.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -435,6 +438,7 @@
 				9A5E75251B17A42000F33E93 /* EmptyDS.swift in Sources */,
 				9AFEA04D1AF93E6E00F1B0F0 /* WatchSearchListVC.swift in Sources */,
 				9A263ED11B1F7E46002CDAF7 /* YahooClientMO.swift in Sources */,
+				9A6339B41B2FCC6B0090D978 /* CustomRefreshControl.swift in Sources */,
 				9A18556E1B0E7B1100E4CFDA /* StockNewsViewController.swift in Sources */,
 				9A263ECF1B1E9F06002CDAF7 /* ImageDownloader.swift in Sources */,
 				9AD4FA851B23B57B00616B3C /* ShareViewController.swift in Sources */,

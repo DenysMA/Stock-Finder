@@ -243,7 +243,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate, NSFetche
         
         if let persistenStock = getPersistentStock(stock.symbol) {
             persistenStock.mergeValues([Stock.Keys.watched: stock.watched])
-            return stock.objectID
+            return persistenStock.objectID
         }
         else {
 

@@ -12,9 +12,13 @@ public extension UIImage {
     
     func resizeImage(size: CGSize) -> UIImage? {
         
-        // if new size is not compatible with the current size return nil
-        if self.size.width < size.width ||  self.size.height < size.height {
-            return nil
+        var size = size
+        // if new size is not compatible with the current size adjust new size
+        if self.size.width < size.width {
+            size.width = self.size.width
+        }
+        if self.size.height < size.height {
+            size.height = self.size.height
         }
 
         let image = self.CGImage

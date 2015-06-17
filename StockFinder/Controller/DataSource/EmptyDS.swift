@@ -28,4 +28,8 @@ class EmptyDS: NSObject, UITableViewDataSource, UITableViewDelegate {
         return tableView.frame.height
     }
     
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.backgroundColor = UIColor.clearColor()
+    }
+    
 }

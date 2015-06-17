@@ -23,6 +23,7 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
     @IBOutlet weak var headerView: UIView!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     //Constraints
     @IBOutlet weak var webContentViewHeight: NSLayoutConstraint!
@@ -62,8 +63,11 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         // Load content
         loadNewsInfo()
         
-        if !news.isContentDownloaded {
+        if !news.isContentDownloaded && news.isContentMainSource {
             downloadNewsContent()
+        }
+        else if !news.isContentMainSource {
+            loadDescription()
         }
     }
     
@@ -110,11 +114,13 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
     // MARK: - Download news content
     func downloadNewsContent() {
         
+        activityIndicator.startAnimating()
         YahooClient.sharedInstance().getNewsContent(news.link) { results, error in
             
             if let error = error {
                 dispatch_async(dispatch_get_main_queue()) {
                     let message = UIAlertView(title: "Download error", message: error, delegate: nil, cancelButtonTitle: "OK")
+                    self.activityIndicator.stopAnimating()
                     message.show()
                 }
             }
@@ -124,6 +130,7 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
                     
                     dispatch_async(dispatch_get_main_queue()) {
                         
+                        self.activityIndicator.stopAnimating()
                         if let content = results[News.Keys.content] as? NSData {
                             
                             self.news.mergeValues(results)
@@ -138,6 +145,7 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
                 else {
                     
                     dispatch_async(dispatch_get_main_queue()) {
+                        self.activityIndicator.stopAnimating()
                         self.loadDescription()
                     }
                 }

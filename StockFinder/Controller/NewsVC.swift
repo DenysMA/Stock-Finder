@@ -43,9 +43,9 @@ class NewsVC: UIViewController {
     }
     
     // MARK: - Load content
-    func loadNews(newsType: NewsType, symbol: String?) {
+    func loadNews(symbol: String? = nil) {
         
-        newsDS.loadData(symbol)
+        newsDS.loadData(symbol: symbol)
     }
     
     // MARK: - Play Video
