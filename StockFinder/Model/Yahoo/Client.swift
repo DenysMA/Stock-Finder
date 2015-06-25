@@ -104,7 +104,7 @@ class Client {
             request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonBody, options: nil, error: &jsonifyError)
         }
         
-        println("Request \(urlString)")
+        NSLog("Request \(urlString)")
 
         // Create data request
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
@@ -117,7 +117,7 @@ class Client {
                 let error = NSError(domain: "Connection Error", code: error.code, userInfo: userInfo)
                 completionHandler(result: nil, error: error)
                 
-                println("Download Error. \(downloadError)")
+                NSLog("Download Error. \(downloadError)")
                 
             } else {
                 

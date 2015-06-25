@@ -10,6 +10,7 @@ import UIKit
 import QuartzCore
 import CoreData
 import WebKit
+import Social
 
 class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDelegate {
     
@@ -30,10 +31,10 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
     @IBOutlet weak var webContentViewWidth: NSLayoutConstraint!
     @IBOutlet weak var headerWidth: NSLayoutConstraint!
     
-    var webView: WKWebView!
-    var newsID: NSManagedObjectID!
-    
     private var news: News!
+    private var webView: WKWebView!
+    private var moreButton: UIBarButtonItem!
+    internal var newsID: NSManagedObjectID!
 
     // Shared context
     var sharedContext: NSManagedObjectContext {
@@ -60,10 +61,19 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         configureWebContent()
         webContentView.addSubview(webView)
         
+        // Configure share buttons
+        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        let space = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: "")
+        space.width = -10
+        let facebook = UIBarButtonItem(image: UIImage(named: "facebookBar"), style: .Plain, target: self, action: "shareWithFacebook")
+        let twitter = UIBarButtonItem(image: UIImage(named: "twitterBar"), style: .Plain, target: self, action: "shareWithTwitter")
+        moreButton = UIBarButtonItem(image: UIImage(named: "moreBar"), style: .Plain, target: self, action: "moreActions")
+        navigationItem.rightBarButtonItems = [moreButton, twitter, facebook]
+        
         // Load content
         loadNewsInfo()
         
-        if !news.isContentDownloaded && news.isContentMainSource {
+        if news.newsContent == nil && news.isContentMainSource {
             downloadNewsContent()
         }
         else if !news.isContentMainSource {
@@ -83,6 +93,10 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         webView.frame = webContentView.bounds
         updateHeaderView()
     }
+    
+    deinit {
+        NSLog("Deinit")
+    }
 
     // MARK: - Load content
     func loadNewsInfo(){
@@ -91,10 +105,10 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         titleLabel.text = news.title
         creditsLabel.text = news.credits
         sourceLabel.text = news.source.uppercaseString
-        dateLabel.text = Formatter.getStringTimeFromDate(news.date!)
+        dateLabel.text = Formatter.getStringTimeFromDate(news.date)
         
-        if let content = news.content {
-            var html = NSString(data:  news.content!, encoding: NSUTF8StringEncoding) as! String
+        if let content = news.newsContent?.htmlContent {
+            var html = NSString(data:  content, encoding: NSUTF8StringEncoding) as! String
             let header = "<header><meta name=\"viewport\" content=\"initial-scale=1, user-scalable=no\"></meta><style>body {background-color:black; font-family:\"HelveticaNeue-Light\"; font-size:\(ScreenSettings.SFPreferedFontSize)px; color:white } a {color: #007AFF;}</style></header>"
             
             html = html.stringByReplacingOccurrencesOfString("<header/>", withString: header, options: NSStringCompareOptions.allZeros, range: nil)
@@ -131,11 +145,12 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
                     dispatch_async(dispatch_get_main_queue()) {
                         
                         self.activityIndicator.stopAnimating()
-                        if let content = results[News.Keys.content] as? NSData {
+                        if let content = results[Content.Keys.content] as? NSData {
                             
-                            self.news.mergeValues(results)
-                            self.loadNewsInfo()
+                            let newContent = Content(dictionary: results, context: self.sharedContext)
+                            self.news.newsContent = newContent
                             CoreDataStackManager.sharedInstance().saveContext()
+                            self.loadNewsInfo()
                         }
                         else {
                             self.loadDescription()
@@ -254,16 +269,23 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         updateHeaderView()
     }
     
-    // MARK: - Share resource
-    @IBAction func shareResource(sender: AnyObject) {
+    // MARK: - Share facebook
+    func shareWithFacebook() {
         
-        let shareView = self.storyboard?.instantiateViewControllerWithIdentifier("shareView") as! ShareViewController
-        shareView.newsID = newsID
-        shareView.providesPresentationContextTransitionStyle = true
-        shareView.definesPresentationContext = true
-        shareView.modalPresentationStyle = UIModalPresentationStyle.OverCurrentContext
-        presentViewController(shareView, animated: true, completion: nil)
+        let serviceType = SLServiceTypeFacebook
+        ShareController.composeForSocialServiceInView(serviceType, newsItem: news, view: self)
+    }
+    
+    // MARK: - Share twitter
+    func shareWithTwitter() {
         
+        let serviceType = SLServiceTypeTwitter
+        ShareController.composeForSocialServiceInView(serviceType, newsItem: news, view: self)
+    }
+    
+    // MARK: - More actions
+    func moreActions() {
+        ShareController.showMoreActionsInView(news, view: self, item: moreButton)
     }
     
     // Configure webView properties
@@ -294,23 +316,4 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         presentViewController(webVC, animated: true, completion: nil)
         
     }
-    
-    // MARK: - News More actions
-    @IBAction func moreActions(sender: UIBarButtonItem) {
-        
-        var items: [AnyObject] = [news.title , NSURL(string: news.link)!]
-        if let image = news.newsImage {
-            items.append(image)
-        }
-        let activity = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        activity.popoverPresentationController?.barButtonItem = sender
-        activity.excludedActivityTypes = [UIActivityTypeAssignToContact]
-        activity.completionWithItemsHandler = { (activityType, completed, returnItems, activityError ) in
-            if completed && activityError == nil {
-                self.dismissViewControllerAnimated(true, completion: nil)
-            }
-        }
-        presentViewController(activity, animated: true, completion: nil)
-    }
-    
 }

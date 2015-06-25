@@ -48,7 +48,7 @@ class ImageDownloader: NSOperation {
                 image = resizedImage
             }
             else {
-                println("image not resized \(self.newsItem.imageURL)")
+                NSLog("image not resized \(self.newsItem.imageURL)")
             }
             self.newsItem.newsImage = image
         }

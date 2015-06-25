@@ -25,7 +25,13 @@ class CompanyViewController: UITableViewController, StockInfoPresentation, UITex
         // Set estimated height
         tableView.estimatedRowHeight = 35.0
         tableView.rowHeight = UITableViewAutomaticDimension
-        title = "Company Info"
+        title = "Company"
+        
+        // Add background table
+        let background = UIImageView(image: UIImage(named: "background"))
+        background.frame = tableView.bounds
+        tableView.backgroundView = background
+        tableView.tableFooterView = UIView(frame: CGRectZero)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -49,6 +55,8 @@ class CompanyViewController: UITableViewController, StockInfoPresentation, UITex
         attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Light", size: ScreenSettings.SFPreferedFontSize)!, range: range)
             
         descriptionLabel.attributedText = attributedString
+        descriptionLabel.textColor = UIColor.whiteColor()
+        
         sectorLabel.text = stock.company.sector
         industryLabel.text = stock.company.industry
         addressLabel.setTitle(stock.company.address, forState: UIControlState.Normal)
@@ -72,10 +80,9 @@ class CompanyViewController: UITableViewController, StockInfoPresentation, UITex
             else if let result = result {
                 
                 var resultDict = result
-                var address = result[Company.Keys.address] as! String
-                address = ", ".join(Formatter.getValuesFromURL(address))
-                resultDict[Company.Keys.address] = address
-                
+                if let address = result[Company.Keys.address] as? String {
+                    resultDict[Company.Keys.address] = ", ".join(Formatter.getValuesFromURL(address))
+                }
                 self.stock.company.mergeValues(resultDict)
                 dispatch_async(dispatch_get_main_queue()) {
                     
@@ -137,6 +144,11 @@ class CompanyViewController: UITableViewController, StockInfoPresentation, UITex
         webVC.contentType = .WebPage
         presentViewController(webVC, animated: true, completion: nil)
         
+    }
+    
+    // MARK: - TableView Delegate
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.backgroundColor = UIColor.clearColor()
     }
     
     // MARK: - Navigation

@@ -12,6 +12,10 @@ class ImageCache {
     
     private var inMemoryCache = NSCache()
     
+    init() {
+        inMemoryCache.countLimit = 15
+    }
+    
     // MARK: - Retreiving images
     
     func imageWithIdentifier(identifier: String?) -> UIImage? {
@@ -52,7 +56,7 @@ class ImageCache {
             if fileExist {
                 inMemoryCache.removeObjectForKey(path)
                 if !NSFileManager.defaultManager().removeItemAtPath(path, error: error) {
-                    println("Error deleting image \(error.debugDescription)")
+                    NSLog("Error deleting image \(error.debugDescription)")
                 }
             }
             
@@ -70,7 +74,7 @@ class ImageCache {
             let data = UIImagePNGRepresentation(image!)
             
             if !data.writeToFile(path, atomically: true) {
-                println("Failed to save \(path) file \(error)")
+                NSLog("Failed to save \(path) file \(error)")
             }
         }
     }

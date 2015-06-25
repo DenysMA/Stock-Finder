@@ -32,6 +32,7 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
     internal var stock: Stock!
     private var searchTask: NSURLSessionDataTask?
     private let infoCollectionDS = StockDetailsDS()
+    private let context = CIContext(options:nil)
     
     // Shared context
     var sharedContext: NSManagedObjectContext {
@@ -42,16 +43,27 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         super.viewDidLoad()
         
         // Set estimated height
-        tableView.estimatedRowHeight = 300.0
+        tableView.estimatedRowHeight = 295.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        // Add background table
+        let background = UIImageView(image: UIImage(named: "background"))
+        background.frame = tableView.bounds
+        tableView.backgroundView = background
+        
         // Set up datasource
         infoCollectionDS.owner = self
+        
         // Download chart image
         downloadImage()
         
         // Set up refresh control
-        refreshControl = UIRefreshControl(frame: CGRectMake(0, 0, self.view.frame.width, self.view.frame.height * 0.01))
+        let customRefreshControl = CustomRefreshControl()
+        customRefreshControl.topContentInset = 0
+        customRefreshControl.topContentInsetSaved = true
+        refreshControl = customRefreshControl
         refreshControl?.addTarget(self, action: "loadPresentation", forControlEvents: UIControlEvents.ValueChanged)
+        refreshControl?.layer.zPosition = tableView.backgroundView!.layer.zPosition + 1
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -61,6 +73,9 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         loadStock()
         downloadStockInfo()
         infoCollection.reloadData()
+        
+        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        refreshControl?.beginRefreshing()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -97,7 +112,7 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
             }
             else if let data = data {
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.graphImage.image = UIImage(data: data)
+                    self.graphImage.image = self.addFilterWithGraph(UIImage(data: data)!)
                 }
             }
         }
@@ -119,16 +134,16 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         priceLabel.text = stock.price
         
         if stock.change > 0 {
-            changeLabel.text = "+\(stock.change)"
+            changeLabel.text = "\(stock.change)"
             changeLabel.textColor = ScreenSettings.SFUpColor
             indicatorImage.image = UIImage(named: "arrow_up")
         }
         else {
-            changeLabel.text = "\(stock.change)"
+            changeLabel.text = "\(abs(stock.change))"
             changeLabel.textColor = ScreenSettings.SFDownColor
             indicatorImage.image = UIImage(named: "arrow_down")
         }
-        changeAvgLabel.text = "(\(stock.changeAvg))%"
+        changeAvgLabel.text = "(\(abs(stock.changeAvg)))%"
         changeAvgLabel.textColor = changeLabel.textColor
         dateLabel.text = stock.stockDate
         if stock.dateAH == "NA" {
@@ -149,10 +164,8 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
     
     // Set up watch button
     func setWatchButton() {
-        let imageName = stock.watched ? "watch_on" : "watch_off"
-        let buttonTitle = stock.watched ? "Unwatch" : "Watch"
+        let imageName = stock.watched ? "watch_on_dark" : "watch_off_dark"
         watchButton.setImage(UIImage(named: imageName), forState: UIControlState.Normal)
-        watchButton.setTitle(buttonTitle, forState: UIControlState.Normal)
     }
     
     // MARK: - Donwload content
@@ -204,10 +217,22 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
             else if let data = data {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityIndicator.stopAnimating()
-                    self.graphImage.image = UIImage(data: data)
+                    self.graphImage.image = self.addFilterWithGraph(UIImage(data: data)!)
                 }
             }
         }
+    }
+    
+    func addFilterWithGraph(graph: UIImage) -> UIImage? {
+        
+        var originalImage = CIImage(image: graph)
+        let colorInvert = CIFilter(name: "CIColorInvert")
+        colorInvert.setValue(originalImage, forKey: kCIInputImageKey)
+        let vibrance = CIFilter(name: "CIVibrance")
+        vibrance.setValue(colorInvert.outputImage, forKey: kCIInputImageKey)
+        vibrance.setValue(1.0, forKey: "inputAmount")
+        let newImage = context.createCGImage(vibrance.outputImage, fromRect: vibrance.outputImage.extent())
+       return UIImage(CGImage: newImage)
     }
     
     // MARK: - StockInfoPresentation Protocol
@@ -218,10 +243,15 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         downloadImage()
     }
     
+    // Update background cell
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.backgroundColor = UIColor.clearColor()
+    }
+    
     // MARK: - Navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         self.parentViewController!.navigationController?.setNavigationBarHidden(true, animated: true)
     }
-    
 
 }

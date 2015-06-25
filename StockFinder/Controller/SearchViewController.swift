@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-@objc protocol SearchViewControllerDelegate {
+@objc protocol SearchViewControllerDelegate: class {
     
     func didBeginSearch()
     func didEndEditing()
@@ -29,7 +29,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate, NSFetche
     private var searchedText = ""
     private var reuseCell = "ticker"
     
-    internal var delegate: SearchViewControllerDelegate?
+    internal weak var delegate: SearchViewControllerDelegate?
     
     // Shared context
     var sharedContext: NSManagedObjectContext {
@@ -86,7 +86,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate, NSFetche
         
         // Check for Errors
         if error != nil {
-            println("Error in fectchWatchList(): \(error)")
+            NSLog("Error in fectchWatchList(): \(error)")
         }
         
         // Return the results, cast to an array of Stock objects,
@@ -125,14 +125,25 @@ class SearchViewController: UITableViewController, UISearchBarDelegate, NSFetche
     
     // MARK: - Table View Delegate
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if searchedText != "" {
-            return 0
-        }
-        return 30.0
+        return 40.0
     }
-    
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Recent Viewed"
+
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let label = UILabel(frame: CGRectMake(0, 0, tableView.frame.width, 40))
+        label.backgroundColor = UIColor.blackColor()
+        label.textColor = UIColor.whiteColor()
+        label.textAlignment = NSTextAlignment.Center
+        if searchedText != "" {
+            label.text = "Tap on eye to add a stock to watch list"
+            label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleFootnote)
+        }
+        else {
+            label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleSubheadline)
+            label.text = "RECENT VIEWED"
+        }
+        
+        return label
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -173,7 +184,7 @@ class SearchViewController: UITableViewController, UISearchBarDelegate, NSFetche
         searchTask = YahooFinanceClient.sharedInstance().getSymbolsWithString(searchText) { results, error in
             
             if let error = error {
-                println("Error search  \(error)")
+                NSLog("Error search  \(error)")
             }
             else {
                 

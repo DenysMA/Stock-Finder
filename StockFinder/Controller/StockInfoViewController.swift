@@ -19,6 +19,7 @@ class StockInfoViewController: UITabBarController, UITabBarControllerDelegate, S
         super.viewDidLoad()
         
         // Set tabbar appearance
+        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         UITabBar.appearance().tintColor = UIColor.whiteColor()
         stockViewControllers = self.viewControllers as! [UIViewController]
         
@@ -27,6 +28,10 @@ class StockInfoViewController: UITabBarController, UITabBarControllerDelegate, S
         
         // Set Up View controllers
         setUpViewControllers()
+    }
+    
+    deinit {
+        NSLog("Info")
     }
     
     func setUpViewControllers() {
@@ -53,7 +58,7 @@ class StockInfoViewController: UITabBarController, UITabBarControllerDelegate, S
                 companyVC.stock = stock
             case let newsVC as StockNewsViewController:
                 newsVC.stock = stock
-            default: println("no injection")
+            default: NSLog("no injection")
             }
         }
         

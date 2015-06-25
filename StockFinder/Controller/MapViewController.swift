@@ -19,8 +19,13 @@ class MapViewController: UIViewController {
         
         // Set title
         title = stock.company.name.uppercaseString
+        navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         // Load Annotation
         loadAnnotation()
+    }
+    
+    deinit {
+    
     }
 
     // MARK: - Load Company Location

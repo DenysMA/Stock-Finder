@@ -9,18 +9,19 @@
 import UIKit
 import CoreData
 
-protocol WatchListDelegate {
+protocol WatchListDelegate: class {
     
     func didSelectStock(stockID: NSManagedObjectID)
     func didFinishLoading()
+    func didTapOnSearchSuggestion()
 }
 
 class WatchSearchListVC: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var message: UILabel!
+    @IBOutlet weak var message: UIView!
     
-    internal var delegate: WatchListDelegate?
+    internal weak var delegate: WatchListDelegate?
     internal var state = State.Initiated
     internal var error: String?
     private let watchSearchCollectionDS = WatchSearchDS()
@@ -148,7 +149,7 @@ class WatchSearchListVC: UIViewController {
                 
                 // Fade out current cell
                 UIView.animateWithDuration(0.25, animations: {
-                    self.snapshot?.transform = CGAffineTransformMakeScale(1.1, 1.1)
+                    self.snapshot?.transform = CGAffineTransformMakeScale(1.05, 1.05)
                     self.snapshot?.alpha = 1
                     currentCell.alpha = 0}){ finished in
                     currentCell.hidden = true
@@ -244,5 +245,10 @@ class WatchSearchListVC: UIViewController {
         stock.order = newOrder
         CoreDataStackManager.sharedInstance().saveContext()
     }
+    
+    @IBAction func messageTapped(sender: UIButton) {
+        delegate?.didTapOnSearchSuggestion()
+    }
+    
     
 }

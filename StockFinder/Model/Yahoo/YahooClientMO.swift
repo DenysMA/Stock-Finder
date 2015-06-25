@@ -21,7 +21,7 @@ extension YahooClient {
             
             if let error = error {
                 dispatch_async(dispatch_get_main_queue()) {
-                    println("Error prefetching news media \(error)")
+                    NSLog("Error prefetching news media \(error)")
                 }
             }
             else if let result = result {

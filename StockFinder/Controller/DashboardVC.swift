@@ -18,6 +18,7 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
     private var watchList: WatchSearchListVC!
     private var news: NewsVC!
     private var searchManager: SearchBarManager!
+    private var headerHeight: CGFloat = 0
     
     //Constraints
     @IBOutlet weak var watchListHeight: NSLayoutConstraint!
@@ -29,6 +30,7 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         // Set estimated height
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
+        headerHeight = ScreenSettings.sizeForOrientation(UIInterfaceOrientation.Portrait).height / 3
         
         // Add background table
         let background = UIImageView(image: UIImage(named: "background"))
@@ -48,7 +50,10 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         configureHeader()
         
         // Set up refresh control
-        refreshControl = CustomRefreshControl()
+        let customRefreshControl = CustomRefreshControl()
+        customRefreshControl.topContentInset = headerHeight
+        customRefreshControl.topContentInsetSaved = true
+        refreshControl = customRefreshControl
         refreshControl?.addTarget(self, action: "loadContent", forControlEvents: UIControlEvents.ValueChanged)
         refreshControl?.layer.zPosition = headerView.layer.zPosition + 1
     }
@@ -72,7 +77,7 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
     
     func loadContent() {
     
-        refreshControl?.beginRefreshing()
+        didBeginLoading()
         marketOverview.loadMarketInfo()
         watchList.loadStockInfo()
         news.loadNews()
@@ -101,12 +106,25 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
             watchListHeight.constant = watchList.size.height
             newsHeight.constant = newsSize.height
             tableView.endUpdates()
+            tableView.contentOffset = CGPointMake(0, -headerHeight)
             refreshControl?.endRefreshing()
-            marketOverview.hideIndicator()
             if news.size != newsSize {
                 didFinishLoading()
             }
         }
+    }
+    
+    func didTapOnSearchSuggestion() {
+        searchManager.search()
+    }
+    
+    func didBeginLoading() {
+        
+        let contentInset = tableView.contentOffset.y - refreshControl!.frame.size.height
+        if tableView.contentOffset.y > contentInset {
+            tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        }
+        refreshControl?.beginRefreshing()
     }
     
     func handleErrors() {
@@ -154,6 +172,8 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         
         searchManager.closeResults()
         CoreDataStackManager.sharedInstance().saveContext()
+        tableView.beginUpdates()
+        tableView.endUpdates()
         watchList.loadStockInfo()
     }
     
@@ -161,6 +181,8 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         
         searchManager.closeResults()
         CoreDataStackManager.sharedInstance().saveContext()
+        tableView.beginUpdates()
+        tableView.endUpdates()
         watchList.loadStockInfo()
     }
     
@@ -168,7 +190,6 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
     
     func configureHeader() {
         
-        let headerHeight = ScreenSettings.sizeForOrientation(UIInterfaceOrientation.Portrait).height / 3
         tableView.tableHeaderView = nil
         tableView.addSubview(headerView)
         tableView.contentInset = UIEdgeInsets(top: headerHeight, left: 0, bottom: 0, right: 0)
@@ -178,7 +199,6 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
     
     func updateHeaderView() {
         
-        let headerHeight = ScreenSettings.sizeForOrientation(UIInterfaceOrientation.Portrait).height / 3
         let origin = tableView.center.x - tableView.bounds.width / 2
         var headerRect = CGRect(x: origin, y: -headerHeight, width: tableView.bounds.width, height: headerHeight)
         if tableView.contentOffset.y < -headerHeight {

@@ -11,9 +11,9 @@ import UIKit
 
 class SearchBarManager: NSObject, UIPopoverPresentationControllerDelegate {
     
-    var topBar: TopBarViewController!
-    var results: SearchViewController!
-    var parent: UIViewController!
+    private var topBar: TopBarViewController!
+    private var results: SearchViewController!
+    private weak var parent: UIViewController!
     
     var title: String? = nil {
         didSet {
@@ -75,6 +75,7 @@ class SearchBarManager: NSObject, UIPopoverPresentationControllerDelegate {
         }
         
         let popover = results.popoverPresentationController
+        popover?.backgroundColor = UIColor.darkGrayColor()
         popover?.sourceView = topBar.searchBar
         popover?.sourceRect = CGRectMake(0, 0, topBar.view.frame.width, topBar.view.frame.height)
         popover?.passthroughViews = [topBar.searchBar]
@@ -89,5 +90,9 @@ class SearchBarManager: NSObject, UIPopoverPresentationControllerDelegate {
         
         parent.dismissViewControllerAnimated(true, completion: nil)
         topBar.restoreView()
+    }
+    
+    func search() {
+        topBar.search()
     }
 }

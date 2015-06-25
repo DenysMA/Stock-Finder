@@ -9,33 +9,32 @@
 import UIKit
 import CoreData
 
-protocol MarketVCDelegate {
+protocol MarketVCDelegate: class {
     
     func didSelectStock(stockID: NSManagedObjectID)
+    func didBeginLoading()
     func didFinishLoading()
 }
 
 class MarketOverviewVC: UIViewController {
 
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var marketCollection: UICollectionView!
     @IBOutlet weak var indexCollection: UICollectionView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var regionControl: UISegmentedControl!
-    @IBOutlet weak var activityHeight: NSLayoutConstraint!
+    @IBOutlet weak var regionBottomConstraint: NSLayoutConstraint!
     
     private let indexMarketDS = IndexMarketDS()
     private let marketDS = MarketOverviewDS()
     private let gradientLayer = CAGradientLayer()
     
-    internal var delegate: MarketVCDelegate?
+    internal weak var delegate: MarketVCDelegate?
     internal var state: State!
     internal var error: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        activityHeight.constant = 0
         // Set estimated size for collection
         let marketFlowLayout = marketCollection.collectionViewLayout as! UICollectionViewFlowLayout
         marketFlowLayout.estimatedItemSize = CGSizeMake(184, 30)
@@ -43,6 +42,9 @@ class MarketOverviewVC: UIViewController {
         // Set up Data Sources
         indexMarketDS.owner = self
         marketDS.owner = self
+        
+        regionBottomConstraint.constant = view.frame.height/3 - regionControl.frame.height - 15
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -72,7 +74,7 @@ class MarketOverviewVC: UIViewController {
     @IBAction func changeRegion(sender: UISegmentedControl) {
         
         let image = UIImage(named: "region_\(sender.selectedSegmentIndex)")
-        showIndicator()
+        delegate?.didBeginLoading()
         indexMarketDS.updatePredicate()
         marketDS.updatePredicate()
         indexMarketDS.loadData()
@@ -84,18 +86,6 @@ class MarketOverviewVC: UIViewController {
             completion: nil)
         
         resetCollectionScroll()
-    }
-    
-    // MARK: - Activity Indicator methods
-    func showIndicator() {
-        
-        if !activityIndicator.isAnimating() {
-            activityIndicator.startAnimating()
-        }
-    }
-    
-    func hideIndicator() {
-        activityIndicator.stopAnimating()
     }
     
 }

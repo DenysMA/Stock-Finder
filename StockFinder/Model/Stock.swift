@@ -117,9 +117,9 @@ class Stock: NSManagedObject {
         price = dictionary[Keys.price] as? String ?? price
         change = dictionary[Keys.change]?.floatValue ?? change
         priceAH = dictionary[Keys.priceAH] as? String ?? priceAH
-        changeAH = dictionary[Keys.changeAH] as? String ?? changeAH
+        changeAH = dictionary[Keys.changeAH] as? String ?? changeAvgAH
         changeAvgAH = dictionary[Keys.changeAvgAH] as? String ?? changeAvgAH
-        dateAH = dictionary[Keys.dateAH] as? String ?? dateAH
+        dateAH = dictionary[Keys.dateAH] as? String ?? "NA"
         open = dictionary[Keys.open] as? String ?? open
         previousClose = dictionary[Keys.previousClose] as? String ?? previousClose
         bid = dictionary[Keys.bid] as? String ?? bid

@@ -55,7 +55,7 @@ class YahooClient: Client {
                 //If error is diferent to cancelled send error details, otherwise means that task was cancelled by user
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -109,7 +109,7 @@ class YahooClient: Client {
                 
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -172,7 +172,7 @@ class YahooClient: Client {
 
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -218,7 +218,7 @@ class YahooClient: Client {
  
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -251,7 +251,7 @@ class YahooClient: Client {
         
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -260,7 +260,8 @@ class YahooClient: Client {
             else {
                 
                 if let result = result["query"] as? [String: AnyObject] {
-                    if let items = (result["results"] as! [String: AnyObject])["item"] as? [[String: AnyObject]] {
+                    let results = result["results"] as? [String: AnyObject]
+                    if let items = results?["item"] as? [[String: AnyObject]] {
                         completionHandler(results: items, error: nil)
                         return
                     }
@@ -280,7 +281,7 @@ class YahooClient: Client {
         let parameters = [KeyParameters.link : newsLink]
         
         let filters: [XPathFilter] = [
-            XPathFilter(xpath: "//img[contains(@class,'provider')]", attribute:"alt", alias: News.Keys.source),
+            XPathFilter(xpath: "//img[contains(@class,'provider') or contains(@class,'logo')]", attribute:"alt", alias: News.Keys.source),
             XPathFilter(xpath: "((//cite/span)[2]) or ((//cite/span)[2]/a)", attribute: nil, alias: News.Keys.credits),
             XPathFilter(xpath: "//iframe", attribute:"src", alias: News.Keys.videoURL),
             XPathFilter(xpath: "//meta[@itemprop='embedURL']", attribute:"content", alias: "video"),
@@ -294,7 +295,7 @@ class YahooClient: Client {
 
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -321,7 +322,7 @@ class YahooClient: Client {
         
         let parameters = [KeyParameters.link : newsLink]
         let filters: [XPathFilter] = [
-            XPathFilter(xpath: "//results/*", attribute:"xml", alias: News.Keys.content)
+            XPathFilter(xpath: "//results/*", attribute:"xml", alias: Content.Keys.content)
         ]
         
         taskForGETMethod(YahooClient.QueryAlias.NewsContent, parameters: parameters, headers: [String:String](), parseResponse: false) { result, error in
@@ -330,7 +331,7 @@ class YahooClient: Client {
 
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)
@@ -368,7 +369,7 @@ class YahooClient: Client {
         
                 if error.code != NSURLErrorCancelled {
                     completionHandler(imageData: nil, error: "Unable to connect to the server")
-                    println("Download Error. \(downloadError)")
+                    NSLog("Download Error. \(downloadError)")
                 }
                 else {
                     completionHandler(imageData: nil, error: nil)
@@ -411,7 +412,7 @@ class YahooFinanceClient: Client {
             if let error = error {
                 if error.code != NSURLErrorCancelled {
                     completionHandler(results: nil, error: error.localizedDescription)
-                    println("Error \(error.debugDescription)")
+                    NSLog("Error \(error.debugDescription)")
                 }
                 else {
                     completionHandler(results: nil, error: nil)

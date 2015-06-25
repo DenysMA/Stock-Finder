@@ -69,5 +69,10 @@ class PropertyList {
         }
         return dictionary.objectForKey("maxFontSize")!.integerValue
     }
+    
+    // Get max number of stored news items
+    func maxItemsForNews() -> Int {
+        return dictionary.objectForKey("newsMaxStorage") as! Int
+    }
         
 }

@@ -12,10 +12,13 @@
         <attribute name="webPage" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="stocks" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Stock" inverseName="company" inverseEntity="Stock" syncable="YES"/>
     </entity>
+    <entity name="Content" representedClassName="Content" syncable="YES">
+        <attribute name="htmlContent" attributeType="Binary" syncable="YES"/>
+        <relationship name="news" maxCount="1" deletionRule="Nullify" destinationEntity="News" inverseName="newsContent" inverseEntity="News" syncable="YES"/>
+    </entity>
     <entity name="News" representedClassName="News" syncable="YES">
-        <attribute name="content" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="credits" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="date" attributeType="Date" indexed="YES" syncable="YES"/>
         <attribute name="guid" attributeType="String" defaultValueString="0" indexed="YES" syncable="YES"/>
         <attribute name="imageState" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
@@ -26,7 +29,7 @@
         <attribute name="title" attributeType="String" syncable="YES"/>
         <attribute name="type" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="videoURL" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="watched" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="newsContent" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Content" inverseName="news" inverseEntity="Content" syncable="YES"/>
     </entity>
     <entity name="Stock" representedClassName="Stock" syncable="YES">
         <attribute name="ask" attributeType="String" defaultValueString="NA" syncable="YES"/>
@@ -68,7 +71,8 @@
     </entity>
     <elements>
         <element name="Company" positionX="-9" positionY="36" width="128" height="195"/>
-        <element name="News" positionX="36" positionY="81" width="128" height="255"/>
+        <element name="News" positionX="36" positionY="81" width="128" height="240"/>
         <element name="Stock" positionX="-63" positionY="-18" width="128" height="585"/>
+        <element name="Content" positionX="-9" positionY="135" width="128" height="75"/>
     </elements>
 </model>

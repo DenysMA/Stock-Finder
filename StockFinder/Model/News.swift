@@ -20,7 +20,6 @@ class News: NSManagedObject {
         static let guid = "guid"
         static let source = "source"
         static let credits = "credits"
-        static let content = "content"
         static let link = "link"
         static let imageURL = "imageURL"
         static let videoURL = "embededURL"
@@ -36,7 +35,6 @@ class News: NSManagedObject {
     @NSManaged var title: String
     @NSManaged var source: String
     @NSManaged var credits: String?
-    @NSManaged var content: NSData?
     @NSManaged var link: String
     @NSManaged var symbol: String?
     @NSManaged var type: Int64
@@ -44,7 +42,8 @@ class News: NSManagedObject {
     @NSManaged var imageURL: String?
     @NSManaged var videoURL: String?
     @NSManaged var imageState: Int64
-    @NSManaged var date: NSDate?
+    @NSManaged var date: NSDate
+    @NSManaged var newsContent: Content?
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -74,10 +73,18 @@ class News: NSManagedObject {
         }
         
         if let pubDate = dictionary[Keys.date] as? String {
-            date = Formatter.getDateFromString(pubDate)
+            date = Formatter.getDateFromString(pubDate) ?? NSDate()
         }
         YahooClient.sharedInstance().prefetchMediaForNews(self)
         
+    }
+    
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        
+        if let imageURL = imageURL {
+            YahooClient.Caches.imageCache.storeImage(nil, withIdentifier: imageURL)
+        }
     }
     
     // MARK: - Merge method
@@ -87,14 +94,7 @@ class News: NSManagedObject {
         imageURL = dictionary[Keys.imageURL] as? String ?? imageURL
         videoURL = dictionary[Keys.videoURL] as? String ?? videoURL
         credits = dictionary[Keys.credits] as? String ?? credits
-        content = dictionary[Keys.content] as? NSData ?? content
         
-    }
-    
-    var isContentDownloaded: Bool {
-        get {
-            return self.content != nil
-        }
     }
     
     var isContentMainSource: Bool {

@@ -11,9 +11,10 @@ import CoreData
 
 class StockNewsViewController: UITableViewController, StockInfoPresentation, NewsVCDelegate {
 
-    var news: NewsVC!
-    internal var stock: Stock!
     @IBOutlet weak var newsConstraint: NSLayoutConstraint!
+    private var news: NewsVC!
+    internal var stock: Stock!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,16 +28,19 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
         tableView.backgroundView = background
         
         // Set up refresh control
-        refreshControl = UIRefreshControl()
+        let customRefreshControl = CustomRefreshControl()
+        customRefreshControl.topContentInset = 0
+        customRefreshControl.topContentInsetSaved = true
+        refreshControl = customRefreshControl
         refreshControl?.addTarget(self, action: "loadPresentation", forControlEvents: UIControlEvents.ValueChanged)
         refreshControl?.layer.zPosition = tableView.backgroundView!.layer.zPosition + 1
-        title = "Company News"
+        title = "Company"
+        loadCompanyNews()
 
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        loadPresentation()
         self.parentViewController!.navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
@@ -51,11 +55,16 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
     
     // MARK: - StockInfoPresentation protocol
     func loadPresentation() {
-        
         refreshControl?.beginRefreshing()
-        
+        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        news.updateNewsSymbol(stock.symbol)
+    }
+    
+    func loadCompanyNews() {
+        refreshControl?.beginRefreshing()
+        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
         // Load company news
-        news.loadNews(symbol: stock.symbol)
+        news.loadNews()
     }
     
     // MARK: - SearchView Delegate
@@ -86,6 +95,7 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
                 
             case "news":
                 news = segue.destinationViewController as! NewsVC
+                news.newsSymbol = stock.symbol
                 news.delegate = self
             case "showNews":
                 self.parentViewController!.navigationController?.setNavigationBarHidden(true, animated: true)

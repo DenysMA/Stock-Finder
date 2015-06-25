@@ -16,6 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        let entity = "News"
+        NSLog("News items \(StorageManager.sharedInstance().storageOfEntity(entity))")
+        StorageManager.sharedInstance().clearOldNews()
         return true
     }
 

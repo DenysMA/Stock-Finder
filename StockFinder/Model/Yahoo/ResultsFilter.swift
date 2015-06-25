@@ -154,7 +154,7 @@ class DataFilter: NSObject {
                 }
             }
             
-        default: println("Invalid content \(JSONContent)")
+        default: NSLog("Invalid content \(JSONContent)")
             
         }
         
