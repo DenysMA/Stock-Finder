@@ -31,14 +31,18 @@ class NewsVC: UIViewController {
         // Set estimated height
         newsTableView.estimatedRowHeight = 180
         newsTableView.rowHeight = UITableViewAutomaticDimension
-        newsTableView.scrollEnabled = true
-        newsTableView.bounces = false
         newsDS.owner = self
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        newsDS.reloadContent()
     }
     
     // Table view size
     var size: CGSize {
         get {
+            newsTableView.layoutIfNeeded()
             return newsTableView.contentSize
         }
     }
@@ -55,8 +59,7 @@ class NewsVC: UIViewController {
     
     func updateNewsSymbol(symbol: String) {
         newsSymbol = symbol
-        newsDS.updatePredicateWithSymbol(symbol)
-        newsDS.loadData()
+        newsDS.updatePredicate()
     }
     
     // MARK: - Play Video

@@ -53,6 +53,9 @@ class News: NSManagedObject {
             newsImage = image
             state = .Downloaded
         }
+        else if let imageURL = imageURL {
+            state = .New
+        }
     }
     
     // MARK: - Initializer with dictionary
@@ -69,7 +72,7 @@ class News: NSManagedObject {
         summary = dictionary[Keys.summary] as? String ?? ""
         
         if let stringLink = link.componentsSeparatedByString("*").last {
-            link = stringLink
+            link = stringLink.stringByRemovingPercentEncoding!
         }
         
         if let pubDate = dictionary[Keys.date] as? String {
@@ -89,11 +92,19 @@ class News: NSManagedObject {
     
     // MARK: - Merge method
     func mergeValues(dictionary: [String: AnyObject]) {
-        
-        source = dictionary[Keys.source] as? String ?? source
-        imageURL = dictionary[Keys.imageURL] as? String ?? imageURL
+
         videoURL = dictionary[Keys.videoURL] as? String ?? videoURL
         credits = dictionary[Keys.credits] as? String ?? credits
+        if let source = dictionary[Keys.source] as? String {
+            self.source = source
+        }
+        else {
+            self.source = Formatter.getHostNameFromString(link)
+            self.state = .Failed
+        }
+        if let imageURL = dictionary[Keys.imageURL] as? String {
+            self.imageURL = Formatter.formatURL(imageURL)
+        }
         
     }
     
@@ -109,7 +120,7 @@ class News: NSManagedObject {
         didSet {
             
             // Image is valid then update state to downloaded
-            if newsImage != nil {
+            if newsImage != nil && imageURL != nil {
                 
                 YahooClient.Caches.imageCache.storeImage(newsImage, withIdentifier: imageURL!)
                 state = .Downloaded
@@ -120,6 +131,13 @@ class News: NSManagedObject {
                 state = .New
             }
         }
+    }
+    
+    var isMediaDownloaded: Bool {
+        if count(source) <= 1   {
+            return false
+        }
+        return true
     }
 
     var newsType: NewsType {

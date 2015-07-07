@@ -67,7 +67,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     // MARK: - Load web content
     func loadPage(){
         
-        let url = NSURL(string: link)
+        let url = NSURL(string: link.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!)
         let request = NSURLRequest(URL: url!)
         webView.loadRequest(request)
     }

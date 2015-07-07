@@ -14,24 +14,49 @@ class CustomRefreshControl: UIRefreshControl {
     var topContentInset: CGFloat = 0
     var topContentInsetSaved: Bool = false
     var animating = false
+    var scrollView: UIScrollView!
+    var attributedString: NSMutableAttributedString!
+    var range: NSRange!
+    var label: UILabel!
     
     override init() {
         super.init()
         self.tintColor = UIColor.clearColor()
         refresh.contentMode = UIViewContentMode.Center
         refresh.frame = self.bounds
-        self.insertSubview(refresh, atIndex: 0)
+        insertSubview(refresh, atIndex: 0)
         
+        attributedString = NSMutableAttributedString(string:"Pull to refresh")
+        range = NSRange(location: 0, length: count(attributedString.string))
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: range)
+        
+        performAnimation()
     }
 
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
+    deinit {
+        refresh.layer.removeAllAnimations()
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let scrollView = self.superview as! UIScrollView
+        if refresh.layer.animationForKey("rotation") == nil {
+            UIView.setAnimationsEnabled(true)
+            performAnimation()
+        }
+        refresh.alpha =  refreshing ? 1 : self.subviews[1].subviews[1].alpha()
+        refresh.layer.timeOffset = refresh.layer.convertTime(CACurrentMediaTime(), fromLayer:nil)
+        refresh.layer.beginTime = CACurrentMediaTime()
+        refresh.layer.speed = refreshing ? 1 : 0.3
+        range = NSRange(location: 0, length: count(attributedString.string))
+        attributedString.mutableString.replaceCharactersInRange(range, withString: refreshing ? "Refreshing" : "Pull to refresh")
+        attributedTitle = attributedString
+        
+        scrollView = self.superview as! UIScrollView
         if !topContentInsetSaved {
             topContentInset = scrollView.contentInset.top
             topContentInsetSaved = true
@@ -39,15 +64,13 @@ class CustomRefreshControl: UIRefreshControl {
         
         // saving own frame, that will be modified
         var newFrame = self.frame
-        
-        if scrollView.contentOffset.y < -topContentInset && refreshing {
+        if  trunc(scrollView.contentOffset.y) < -trunc(topContentInset) {
             newFrame.origin.y = topContentInset == 0 ? -frame.height: scrollView.contentOffset.y
             refresh.hidden = false
         }
         else {
             newFrame.origin.y = -topContentInset
             refresh.hidden = true
-            stopAnimation()
         }
         
         self.frame = newFrame
@@ -55,29 +78,20 @@ class CustomRefreshControl: UIRefreshControl {
     }
     
     override func beginRefreshing() {
-        refresh.hidden = false
-        performAnimation()
         super.beginRefreshing()
     }
     
     override func endRefreshing() {
-        refresh.hidden = true
-        stopAnimation()
         super.endRefreshing()
     }
-    
+
     func performAnimation() {
-        if !animating {
-            animating = true
-            UIView.animateWithDuration(1.5, delay: 0, options:UIViewAnimationOptions.CurveLinear |  UIViewAnimationOptions.Repeat, animations: {
-                self.refresh.transform = CGAffineTransformRotate(self.refresh.transform, CGFloat(M_PI_2))
-                }, completion: nil)
-        }
-    }
-    
-    func stopAnimation() {
-        refresh.layer.removeAllAnimations()
-        animating = false
+        let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
+        rotationAnimation.toValue = M_PI * 2.0 * 2 * 1
+        rotationAnimation.duration = 3.0
+        rotationAnimation.cumulative = true
+        rotationAnimation.repeatCount = Float.infinity
+        refresh.layer.addAnimation(rotationAnimation, forKey: "rotation")
     }
     
 }

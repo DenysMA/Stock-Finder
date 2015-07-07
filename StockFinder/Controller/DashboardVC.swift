@@ -56,16 +56,19 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         refreshControl = customRefreshControl
         refreshControl?.addTarget(self, action: "loadContent", forControlEvents: UIControlEvents.ValueChanged)
         refreshControl?.layer.zPosition = headerView.layer.zPosition + 1
+        
+        loadContent()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        loadContent()
+        didBeginLoading()
+        marketOverview.loadMarketInfo()
+        watchList.loadStockInfo()
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        tableView.reloadData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -86,13 +89,14 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
     // Update background cell
     
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        UIView.setAnimationsEnabled(true)
         cell.backgroundColor = UIColor.clearColor()
     }
     
     // MARK: - Delegate methods
     
     func didSelectNews(newsID: NSManagedObjectID) {
-        
+        UIView.setAnimationsEnabled(true)
         performSegueWithIdentifier("showNews", sender: newsID)
     }
     
@@ -102,12 +106,19 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
         
             var newsSize = news.size
             handleErrors()
+            
+            if refreshControl!.refreshing {
+                refreshControl?.endRefreshing()
+                tableView.contentOffset = CGPointMake(0, -headerHeight)
+            }
+            else {
+                UIView.setAnimationsEnabled(false)
+            }
             tableView.beginUpdates()
             watchListHeight.constant = watchList.size.height
             newsHeight.constant = newsSize.height
             tableView.endUpdates()
-            tableView.contentOffset = CGPointMake(0, -headerHeight)
-            refreshControl?.endRefreshing()
+            
             if news.size != newsSize {
                 didFinishLoading()
             }
@@ -120,11 +131,11 @@ class DashboardVC: UITableViewController, UISearchBarDelegate, UIScrollViewDeleg
     
     func didBeginLoading() {
         
-        let contentInset = tableView.contentOffset.y - refreshControl!.frame.size.height
-        if tableView.contentOffset.y > contentInset {
-            tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        UIView.setAnimationsEnabled(true)
+        if tableView.contentOffset.y >= -headerHeight - refreshControl!.frame.size.height && tableView.contentOffset.y < 0 {
+            tableView.contentOffset = CGPointMake(0, -headerHeight - refreshControl!.frame.size.height)
+            refreshControl?.beginRefreshing()
         }
-        refreshControl?.beginRefreshing()
     }
     
     func handleErrors() {

@@ -38,13 +38,12 @@ class MarketOverviewVC: UIViewController {
         // Set estimated size for collection
         let marketFlowLayout = marketCollection.collectionViewLayout as! UICollectionViewFlowLayout
         marketFlowLayout.estimatedItemSize = CGSizeMake(184, 30)
+        regionBottomConstraint.constant = UIScreen.mainScreen().bounds.height/3 - regionControl.frame.height - 15
         
         // Set up Data Sources
         indexMarketDS.owner = self
         marketDS.owner = self
-        
-        regionBottomConstraint.constant = view.frame.height/3 - regionControl.frame.height - 15
-        
+
     }
     
     override func viewDidLayoutSubviews() {

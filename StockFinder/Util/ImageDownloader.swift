@@ -30,6 +30,7 @@ class ImageDownloader: NSOperation {
         }
         
         // Start downloading image
+        NSLog("image ready")
         let imageData = NSData(contentsOfURL:NSURL(string: self.newsItem.imageURL!)!)
         
         // Check if operation was cancelled before setting the image
@@ -40,11 +41,13 @@ class ImageDownloader: NSOperation {
         // If image data is valid then set image to news Image. (This will cause the image to be stored and it will update Photo.state property)
         if imageData?.length > 0 {
             
+            NSLog("image downloaded")
             var image = UIImage(data:imageData!)
             let width = ScreenSettings.sizeForOrientation(UIInterfaceOrientation.Portrait).width
             
             // Resize image downloaded according to screen size
             if let resizedImage = image!.resizeImage(CGSizeMake(width, width/2)) {
+                NSLog("image resized")
                 image = resizedImage
             }
             else {
@@ -56,6 +59,7 @@ class ImageDownloader: NSOperation {
         {
             // If the image data is invalid then update state property to Failed
             self.newsItem.state = .Failed
+            NSLog("fail image download \(self.newsItem.imageURL)")
         }
     }
 }

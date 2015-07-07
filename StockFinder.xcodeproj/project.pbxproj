@@ -34,7 +34,7 @@
 		9A3B529A1AF86DD600F6959E /* DashboardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B52991AF86DD600F6959E /* DashboardVC.swift */; };
 		9A3B529C1AF86F6800F6959E /* MarketOverviewDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B529B1AF86F6800F6959E /* MarketOverviewDS.swift */; };
 		9A3B529E1AF8711D00F6959E /* WatchSearchDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B529D1AF8711D00F6959E /* WatchSearchDS.swift */; };
-		9A3B52A01AF8717500F6959E /* NewsDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B529F1AF8717500F6959E /* NewsDS.swift */; };
+		9A3B52A01AF8717500F6959E /* NewsResultsDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3B529F1AF8717500F6959E /* NewsResultsDS.swift */; };
 		9A5517BB1B04D7B7008D64BB /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5517BA1B04D7B7008D64BB /* SearchViewController.swift */; };
 		9A5E75251B17A42000F33E93 /* EmptyDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5E75241B17A42000F33E93 /* EmptyDS.swift */; };
 		9A6339B41B2FCC6B0090D978 /* CustomRefreshControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6339B31B2FCC6B0090D978 /* CustomRefreshControl.swift */; };
@@ -44,6 +44,7 @@
 		9AA8C4BA1AFAA9050092F70E /* NewsDisplayVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA8C4B91AFAA9050092F70E /* NewsDisplayVC.swift */; };
 		9AA967191B0505CC00F9BBE6 /* TopBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA967181B0505CC00F9BBE6 /* TopBarViewController.swift */; };
 		9AA9671B1B05619100F9BBE6 /* StockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA9671A1B05619100F9BBE6 /* StockTableViewCell.swift */; };
+		9ACAAE1F1B3FA0FE000D3FE3 /* NewsDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ACAAE1E1B3FA0FE000D3FE3 /* NewsDS.swift */; };
 		9AD4FA851B23B57B00616B3C /* ShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4FA841B23B57B00616B3C /* ShareController.swift */; };
 		9ADB73E81AF059680038F2A2 /* ResultsFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ADB73E71AF059680038F2A2 /* ResultsFilter.swift */; };
 		9AE389871B0AA45C002ACE6C /* WatchCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE389861B0AA45C002ACE6C /* WatchCollectionViewCell.swift */; };
@@ -104,7 +105,7 @@
 		9A3B52991AF86DD600F6959E /* DashboardVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardVC.swift; sourceTree = "<group>"; };
 		9A3B529B1AF86F6800F6959E /* MarketOverviewDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarketOverviewDS.swift; sourceTree = "<group>"; };
 		9A3B529D1AF8711D00F6959E /* WatchSearchDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchSearchDS.swift; sourceTree = "<group>"; };
-		9A3B529F1AF8717500F6959E /* NewsDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsDS.swift; sourceTree = "<group>"; };
+		9A3B529F1AF8717500F6959E /* NewsResultsDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsResultsDS.swift; sourceTree = "<group>"; };
 		9A5517BA1B04D7B7008D64BB /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		9A5E75241B17A42000F33E93 /* EmptyDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyDS.swift; sourceTree = "<group>"; };
 		9A6339B31B2FCC6B0090D978 /* CustomRefreshControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomRefreshControl.swift; sourceTree = "<group>"; };
@@ -114,6 +115,7 @@
 		9AA8C4B91AFAA9050092F70E /* NewsDisplayVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsDisplayVC.swift; sourceTree = "<group>"; };
 		9AA967181B0505CC00F9BBE6 /* TopBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopBarViewController.swift; sourceTree = "<group>"; };
 		9AA9671A1B05619100F9BBE6 /* StockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StockTableViewCell.swift; sourceTree = "<group>"; };
+		9ACAAE1E1B3FA0FE000D3FE3 /* NewsDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsDS.swift; sourceTree = "<group>"; };
 		9AD4FA841B23B57B00616B3C /* ShareController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareController.swift; sourceTree = "<group>"; };
 		9ADB73E71AF059680038F2A2 /* ResultsFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsFilter.swift; sourceTree = "<group>"; };
 		9AE389861B0AA45C002ACE6C /* WatchCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -279,7 +281,8 @@
 				9A3B529B1AF86F6800F6959E /* MarketOverviewDS.swift */,
 				9A263EB71B1B83F3002CDAF7 /* IndexMarketDS.swift */,
 				9A3B529D1AF8711D00F6959E /* WatchSearchDS.swift */,
-				9A3B529F1AF8717500F6959E /* NewsDS.swift */,
+				9A3B529F1AF8717500F6959E /* NewsResultsDS.swift */,
+				9ACAAE1E1B3FA0FE000D3FE3 /* NewsDS.swift */,
 				9A5E75241B17A42000F33E93 /* EmptyDS.swift */,
 				9A263EB91B1B97AF002CDAF7 /* CollectionBaseDS.swift */,
 				9A263EC21B1CD197002CDAF7 /* StockDetailsDS.swift */,
@@ -436,6 +439,7 @@
 				9A3B529E1AF8711D00F6959E /* WatchSearchDS.swift in Sources */,
 				9AA8C4B81AFA8C630092F70E /* NewsTableViewCell.swift in Sources */,
 				9A1855721B123ECC00E4CFDA /* SearchBarManager.swift in Sources */,
+				9ACAAE1F1B3FA0FE000D3FE3 /* NewsDS.swift in Sources */,
 				9AFC4DF41AEDAB400000DA61 /* YahooConstants.swift in Sources */,
 				9AFEA0511AF9B46300F1B0F0 /* StockCollectionViewCell.swift in Sources */,
 				9A263EC51B1CD9CB002CDAF7 /* StockDetailViewCell.swift in Sources */,
@@ -464,7 +468,7 @@
 				9A18CFC61AF86065009F954A /* Company.swift in Sources */,
 				9A263EB81B1B83F3002CDAF7 /* IndexMarketDS.swift in Sources */,
 				9A5517BB1B04D7B7008D64BB /* SearchViewController.swift in Sources */,
-				9A3B52A01AF8717500F6959E /* NewsDS.swift in Sources */,
+				9A3B52A01AF8717500F6959E /* NewsResultsDS.swift in Sources */,
 				9AA9671B1B05619100F9BBE6 /* StockTableViewCell.swift in Sources */,
 				9A3B529A1AF86DD600F6959E /* DashboardVC.swift in Sources */,
 				9ADB73E81AF059680038F2A2 /* ResultsFilter.swift in Sources */,

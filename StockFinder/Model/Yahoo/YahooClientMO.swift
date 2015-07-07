@@ -16,18 +16,19 @@ extension YahooClient {
         
         // Get context
         let sharedContext = news.managedObjectContext!
-        
         getNewsMedia(news.link) { result, error in
             
             if let error = error {
                 dispatch_async(dispatch_get_main_queue()) {
+                    news.source = Formatter.getHostNameFromString(news.link)
+                    sharedContext.save(nil)
                     NSLog("Error prefetching news media \(error)")
                 }
             }
             else if let result = result {
                 dispatch_async(dispatch_get_main_queue()) {
                     news.mergeValues(result)
-                    CoreDataStackManager.sharedInstance().saveContext()
+                    sharedContext.save(nil)
                 }
             }
         }

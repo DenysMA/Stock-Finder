@@ -278,7 +278,7 @@ class YahooClient: Client {
     
     func getNewsMedia(newsLink: String, completionHandler: (results: [String: AnyObject]?, error: String?) -> Void) -> Void {
         
-        let parameters = [KeyParameters.link : newsLink]
+        let parameters = [KeyParameters.link : newsLink.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!]
         
         let filters: [XPathFilter] = [
             XPathFilter(xpath: "//img[contains(@class,'provider') or contains(@class,'logo')]", attribute:"alt", alias: News.Keys.source),
@@ -320,7 +320,7 @@ class YahooClient: Client {
     
     func getNewsContent(newsLink: String, completionHandler: (results: [String: AnyObject]?, error: String?) -> Void) -> Void {
         
-        let parameters = [KeyParameters.link : newsLink]
+        let parameters = [KeyParameters.link : newsLink.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!]
         let filters: [XPathFilter] = [
             XPathFilter(xpath: "//results/*", attribute:"xml", alias: Content.Keys.content)
         ]

@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>47EF3A48-9A95-43B0-BAC9-707BAFF997F6</string>
 	<key>IDESourceControlProjectName</key>
-	<string>StockFinder</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>864DEE897B6664DE0EA093EA8308AAF5087A2EF8</key>
 		<string>https://github.com/DenysMA/Stock-Finder.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>StockFinder.xcodeproj</string>
+	<string>StockFinder.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>864DEE897B6664DE0EA093EA8308AAF5087A2EF8</key>

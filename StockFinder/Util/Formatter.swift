@@ -29,6 +29,27 @@ class Formatter {
         return values
     }
     
+    class func formatURL(stringURL: String) -> String {
+        if let range = stringURL.rangeOfString("http", options: NSStringCompareOptions.CaseInsensitiveSearch, range: nil, locale: nil) {
+            return stringURL
+        }
+        else {
+            let stringURL = "http:" + stringURL
+            return stringURL
+        }
+    }
+    
+    class func getHostNameFromString(stringURL: String) -> String {
+        let URL = NSURL(string: stringURL.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!)!
+        if let host = URL.host {
+            let names = host.componentsSeparatedByString(".")
+            if names.count > 1 {
+                return names[1]
+            }
+        }
+        return "Unknown"
+    }
+    
     // Format single string removing white spaces
     class func getFormattedString(string: String) -> String? {
         

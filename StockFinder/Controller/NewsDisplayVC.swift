@@ -60,6 +60,7 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
         configureHeader()
         configureWebContent()
         webContentView.addSubview(webView)
+        navigationItem.backBarButtonItem?.title = ""
         
         // Configure share buttons
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
@@ -185,6 +186,7 @@ class NewsDisplayVC: UITableViewController, WKNavigationDelegate, UIScrollViewDe
                         }
                     }
                 }
+                downloader.start()
             }
         }
         else {

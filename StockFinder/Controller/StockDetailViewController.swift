@@ -64,6 +64,9 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         refreshControl = customRefreshControl
         refreshControl?.addTarget(self, action: "loadPresentation", forControlEvents: UIControlEvents.ValueChanged)
         refreshControl?.layer.zPosition = tableView.backgroundView!.layer.zPosition + 1
+        
+        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        refreshControl?.beginRefreshing()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -73,9 +76,6 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         loadStock()
         downloadStockInfo()
         infoCollection.reloadData()
-        
-        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
-        refreshControl?.beginRefreshing()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -159,7 +159,6 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
         
         setWatchButton()
         infoCollection.reloadData()
-        refreshControl?.endRefreshing()
     }
     
     // Set up watch button
@@ -196,6 +195,7 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
                     if self.stock.watched {
                         self.stock.managedObjectContext?.save(nil)
                     }
+                    self.refreshControl?.endRefreshing()
                 }
             }
         }
@@ -237,6 +237,11 @@ class StockDetailViewController: UITableViewController, StockInfoPresentation {
     
     // MARK: - StockInfoPresentation Protocol
     func loadPresentation() {
+        
+        if !refreshControl!.refreshing {
+            tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+            refreshControl?.beginRefreshing()
+        }
         
         loadStock()
         downloadStockInfo()

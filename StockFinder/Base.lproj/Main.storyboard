@@ -886,7 +886,7 @@
         <!--NewsVC-->
         <scene sceneID="PxB-nh-Twp">
             <objects>
-                <viewController id="16Q-Nm-j7E" customClass="NewsVC" customModule="StockFinder" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="16Q-Nm-j7E" customClass="NewsVC" customModule="StockFinder" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="s6T-Ds-7uu"/>
                         <viewControllerLayoutGuide type="bottom" id="XaY-m8-7LO"/>
@@ -895,7 +895,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="580" height="310"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="180" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="1rJ-Bh-ODN" userLabel="newsTable">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="180" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="1rJ-Bh-ODN" userLabel="newsTable">
                                 <rect key="frame" x="0.0" y="0.0" width="580" height="310"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" red="0.7019608021" green="0.7019608021" blue="0.7019608021" alpha="1" colorSpace="calibratedRGB"/>
@@ -1125,7 +1125,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="249" verticalCompressionResistancePriority="751" text="US STOCKS-Wall Street ends on upbeat earnings from Berkshire" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="STq-31-I5C" userLabel="header">
-                                                    <rect key="frame" x="10" y="11" width="560" height="30"/>
+                                                    <rect key="frame" x="10" y="11" width="560" height="0.0"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="43" id="5Ki-LJ-zdH"/>
                                                         <constraint firstAttribute="height" constant="30" id="LF0-mR-eZc"/>
@@ -1141,7 +1141,7 @@
                                                     </variation>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n4L-3S-qpX" userLabel="description">
-                                                    <rect key="frame" x="10" y="86" width="560" height="36"/>
+                                                    <rect key="frame" x="10" y="122" width="560" height="0.0"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="31" id="VPu-iv-h4N"/>
                                                     </constraints>
@@ -1156,35 +1156,26 @@
                                                     </variation>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="D2B-xX-V1l">
-                                                    <rect key="frame" x="130" y="76" width="320" height="0.0"/>
+                                                    <rect key="frame" x="130" y="31" width="320" height="81"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="320" id="0Mm-tk-EML"/>
-                                                        <constraint firstAttribute="height" priority="999" id="IHD-yu-bIC"/>
+                                                        <constraint firstAttribute="height" priority="999" constant="160" id="IHD-yu-bIC"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="2 days ago" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RFP-HJ-Nbp" userLabel="date">
-                                                    <rect key="frame" x="508" y="51" width="62" height="15"/>
+                                                    <rect key="frame" x="508" y="21" width="62" height="0.0"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="YAHOO" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9hW-aF-YFr" userLabel="source">
-                                                    <rect key="frame" x="10" y="51" width="43" height="15"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="15" id="CPc-cc-0eo"/>
-                                                        <constraint firstAttribute="width" constant="220" id="PJQ-7c-cV9"/>
-                                                    </constraints>
+                                                    <rect key="frame" x="10" y="21" width="43" height="0.0"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <color key="textColor" red="0.7019608021" green="0.7019608021" blue="0.7019608021" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="PJQ-7c-cV9"/>
-                                                        </mask>
-                                                    </variation>
                                                 </label>
                                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="746" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CCd-H9-tVG" userLabel="play">
-                                                    <rect key="frame" x="130" y="76" width="320" height="0.0"/>
+                                                    <rect key="frame" x="130" y="31" width="320" height="81"/>
                                                     <state key="normal" image="play">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
@@ -1274,6 +1265,7 @@
                                                 <constraint firstItem="IZb-0p-ciU" firstAttribute="leading" secondItem="n4L-3S-qpX" secondAttribute="leading" id="Vi5-dV-FfA"/>
                                                 <constraint firstItem="n4L-3S-qpX" firstAttribute="leading" secondItem="9hW-aF-YFr" secondAttribute="leading" id="Wkb-aB-YIP"/>
                                                 <constraint firstItem="STq-31-I5C" firstAttribute="leading" secondItem="pYX-Kh-l0z" secondAttribute="leading" constant="10" id="anV-Pr-vT1"/>
+                                                <constraint firstItem="D2B-xX-V1l" firstAttribute="top" secondItem="RFP-HJ-Nbp" secondAttribute="bottom" constant="10" id="cEA-UE-lC3"/>
                                                 <constraint firstItem="CCd-H9-tVG" firstAttribute="centerY" secondItem="D2B-xX-V1l" secondAttribute="centerY" id="n0V-dh-ucp"/>
                                                 <constraint firstItem="9hW-aF-YFr" firstAttribute="centerY" secondItem="RFP-HJ-Nbp" secondAttribute="centerY" id="qDD-Sr-GZW"/>
                                                 <constraint firstItem="cQW-QW-kc2" firstAttribute="top" secondItem="pYX-Kh-l0z" secondAttribute="top" id="qqw-lZ-87q"/>
@@ -1283,6 +1275,11 @@
                                                 <constraint firstAttribute="centerX" secondItem="D2B-xX-V1l" secondAttribute="centerX" id="zKm-DI-fHf"/>
                                                 <constraint firstItem="STq-31-I5C" firstAttribute="leading" secondItem="9hW-aF-YFr" secondAttribute="leading" id="zxW-Ze-Srg"/>
                                             </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="IMU-LD-00M"/>
+                                                </mask>
+                                            </variation>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
@@ -1581,7 +1578,9 @@
                         </connections>
                     </tableView>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" title="News" id="6lV-Qo-RY5"/>
+                    <navigationItem key="navigationItem" title="News" id="6lV-Qo-RY5">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="tVs-Tc-M2A"/>
+                    </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>

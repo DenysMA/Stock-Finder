@@ -1,26 +1,21 @@
 //
-//  NewsDS1.swift
+//  NewsDS.swift
 //  StockFinder
 //
-//  Created by Denys Medina Aguilar on 27/06/15.
+//  Created by Denys Medina Aguilar on 04/05/15.
 //  Copyright (c) 2015 Denys Medina Aguilar. All rights reserved.
 //
 
 import UIKit
 import CoreData
 
-class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
+class NewsResultsDS: NSObject, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate {
     
     private var pendingOperations = PendingOperations()
-    private var temporaryContext: NSManagedObjectContext!
     private var reuseCell = "newsCell"
     private var emptyDS = EmptyDS()
-    private var offset = 0
-    private var limit = 10
-    private var totalObjects = 0
-    private var news = [News]()
-    private var moreButton: UIButton!
-    private var downloaded = false
+    private let fetchLimit = 10
+    private var fetchOffset = 0
     
     weak var owner: NewsVC? {
         didSet {
@@ -34,35 +29,26 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
                 reuseCell = "shortNewsCell"
             }
             
-            // Set the temporary context
-            temporaryContext = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.PrivateQueueConcurrencyType)
-            temporaryContext.persistentStoreCoordinator = self.sharedContext.persistentStoreCoordinator
-            
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "didFinishSaving:", name: NSManagedObjectContextDidSaveNotification, object: temporaryContext)
-            
-            moreButton = UIButton.buttonWithType(UIButtonType.System) as! UIButton
-            moreButton.frame = CGRectMake(0, 0, owner!.newsTableView.frame.width, 44)
-            moreButton.backgroundColor = UIColor.blackColor()
-            moreButton.setTitle("More News", forState: UIControlState.Normal)
-            moreButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
-            moreButton.addTarget(self, action: "loadMore", forControlEvents: UIControlEvents.TouchUpInside)
+            // Set up fetchController
+            NSFetchedResultsController.deleteCacheWithName("News")
+            fetchedResultsController.delegate = self
+            fetchedResultsController.performFetch(nil)
         }
     }
-    
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
-        temporaryContext.reset()
-        sharedContext.reset()
-    }
-    
+
     // Shared context
     var sharedContext: NSManagedObjectContext {
         return CoreDataStackManager.sharedInstance().managedObjectContext!
     }
     
+    deinit {
+        NSFetchedResultsController.deleteCacheWithName("News")
+    }
+    
     func loadData() {
         
         // Check news type
+        
         let newsType: NewsType
         if let symbol = owner?.newsSymbol {
             newsType = NewsType.CompanyNews
@@ -73,8 +59,6 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
         }
         // Set state
         owner?.state = State.Loading
-        downloaded = false
-        offset = 0
         YahooClient.sharedInstance().getNews(owner!.newsSymbol) { results, error in
             
             if let error = error {
@@ -92,7 +76,6 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
                     dispatch_async(dispatch_get_main_queue()){
                         
                         self.owner?.newsTableView.dataSource = self
-                        self.owner?.newsTableView.delegate = self
                         
                         let guids = results.map() {
                             $0[News.Keys.guid] as! String
@@ -105,30 +88,24 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
                             let guid = dictionary[News.Keys.guid] as! String
                             let results = items.filter() { $0.guid == guid }
                             if results.isEmpty {
-                                // Create news objec 
-                                let newsItem = News(dictionary: dictionary, context: self.temporaryContext)
+                                // Create news object                                
+                                let newsItem = News(dictionary: dictionary, context: self.sharedContext)
                                 newsItem.newsType = newsType
                                 newsItem.symbol = self.owner!.newsSymbol ?? ""
                             }
                             else {
                                 let news = results.first!
-                                if news.isContentMainSource && news.imageURL == nil && news.state == .Failed {
+                                if news.isContentMainSource && news.source.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).isEmpty {
                                     YahooClient.sharedInstance().prefetchMediaForNews(news)
                                 }
                             }
                         }
                         
                         // Save context and upate status
-                        self.downloaded = true
+                        CoreDataStackManager.sharedInstance().saveContext()
                         self.owner?.error = nil
-                        if self.temporaryContext.hasChanges {
-                            self.temporaryContext.save(nil)
-                        }
-                        else {
-                            self.refreshContent()
-                        }
-            
-                   } 
+                        self.owner?.state = State.Loaded
+                    }
                 }
                 else {
                     dispatch_async(dispatch_get_main_queue()){
@@ -144,19 +121,16 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    // MARK: - Fetch News
-    func fetchNews() -> [News] {
+    // MARK: - FetchResultsController
+    lazy var fetchedResultsController: NSFetchedResultsController = {
         
-        let error: NSErrorPointer = nil
-        
-        // Create the Fetch Request
+        // Create fetch request
         let fetchRequest = NSFetchRequest(entityName: "News")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         fetchRequest.includesSubentities = false
-        fetchRequest.includesPendingChanges = false
+        fetchRequest.fetchBatchSize = 10
         fetchRequest.returnsObjectsAsFaults = false
-        fetchRequest.fetchLimit = limit
-        fetchRequest.fetchOffset = offset
+        fetchRequest.includesPendingChanges = true
         
         // If there is a symbol, search for company news
         if let symbol = self.owner!.newsSymbol {
@@ -166,93 +140,43 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
             // Search Top News
             fetchRequest.predicate = NSPredicate(format: "type == %i", NewsType.TopNews.rawValue)
         }
-
-        // Execute the Fetch Request
-        let results = sharedContext.executeFetchRequest(fetchRequest, error: error)
         
-        if offset == 0 {
-            fetchRequest.fetchLimit = 0
-            totalObjects = sharedContext.countForFetchRequest(fetchRequest, error: nil)
-        }
+        // Create fetchresults controller
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedContext,
+            sectionNameKeyPath: nil,
+            cacheName: "News")
+        return fetchedResultsController
         
-        // Check for Errors
-        if error != nil {
-            NSLog("Error in fectchWatchList(): \(error)")
-        }
-        
-        // Return the results, cast to an array of Stock objects,
-        // or an empty array of Stock objects
-        return results as? [News] ?? [News]()
-    }
-
-    func reloadContent() {
-        offset = 0
-        limit = news.count
-        news = self.fetchNews()
-        owner?.newsTableView.reloadData()
-        limit = 10
-    }
+        }()
     
-    func loadMore() {
-
-        offset = offset + limit
-        for item in fetchNews() {
-            news.append(item)
-        }
-        refreshContent()
-    }
-    
-    func updatePredicate() {
+    func updatePredicateWithSymbol(symbol: String) {
         
-        offset = 0
-        news.removeAll(keepCapacity: true)
-        owner?.newsTableView.reloadData()
+        let predicate = NSPredicate(format: "symbol == %@", symbol)
+        // Update predicate
+        fetchedResultsController.delegate = nil
         sharedContext.reset()
-        loadData()
+        NSFetchedResultsController.deleteCacheWithName("News")
+        fetchedResultsController.fetchRequest.predicate = predicate
+        fetchedResultsController.delegate = self
+        owner?.newsTableView.reloadData()
         
-    }
-    
-    func didFinishSaving(notification: NSNotification) {
-        sharedContext.mergeChangesFromContextDidSaveNotification(notification)
-        refreshContent()
-    }
-    
-    func refreshContent() {
-        if downloaded {
-            
-            var itemsWithoutMedia = [News]()
-            if offset == 0 {
-                self.news = self.fetchNews()
-                itemsWithoutMedia = news.filter() {
-                    !$0.isMediaDownloaded
-                }
-            }
-            
-            if itemsWithoutMedia.isEmpty {
-                owner?.newsTableView.reloadData()
-                owner?.state = .Loaded
-                owner?.delegate?.didFinishLoading()
-            }
-        }
     }
     
     // MARK: - TableView Datasource
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return news.count
+        if let sectionInfo = fetchedResultsController.sections?.first as? NSFetchedResultsSectionInfo {
+            return sectionInfo.numberOfObjects
+        }
+        return 0
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let newsItem = news[indexPath.row]
-        var newsCell: NewsTableViewCell? = nil
-        if let cell = tableView.dequeueReusableCellWithIdentifier(reuseCell) as? NewsTableViewCell {
-            newsCell = cell
-        }
-        else {
-            newsCell = NewsTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: reuseCell)
-        }
-        configureCell(newsCell!, indexPath: indexPath, newsItem: newsItem)
-        return newsCell!
+        let newsItem = fetchedResultsController.objectAtIndexPath(indexPath) as! News
+        let cell = tableView.dequeueReusableCellWithIdentifier(reuseCell, forIndexPath: indexPath) as! NewsTableViewCell
+        configureCell(cell, indexPath: indexPath, newsItem: newsItem)
+        return cell
     }
     
     // Configure cell
@@ -273,9 +197,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
             switch newsItem.state {
                 
             case .Failed:
-                if let imageHeight = newsCell.imageHeight {
-                    imageHeight.constant = 0
-                }
+                NSLog("download image failed")
             case .New:
                 startDownloadForRecord(indexPath, newsItem: newsItem)
             case .Downloaded:
@@ -284,7 +206,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
                     newsCell.newsImage.image = image
                     // Set image height constraint
                     if let imageHeight = newsCell.imageHeight {
-                        imageHeight.constant = newsCell.newsImage.frame.width/2
+                        imageHeight.constant = newsCell.newsImage.image!.size.height
                     }
                 }
                 else {
@@ -301,17 +223,6 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         cell.backgroundColor = UIColor.clearColor()
-    }
-    
-    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if downloaded && news.count > 0 && news.count < totalObjects - 1 {
-            return 44.0
-        }
-        return 0
-    }
-    
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return moreButton
     }
     
     // MARK: - Start Image Download
@@ -352,8 +263,46 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
     // MARK: - TableView Delegate
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let newsItem = news[indexPath.row]
-        owner?.delegate?.didSelectNews(newsItem.objectID)
+        let news = fetchedResultsController.objectAtIndexPath(indexPath) as! News
+        owner?.delegate?.didSelectNews(news.objectID)
+    }
+    
+    // MARK: - FetchResults Delegate
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        
+        owner?.newsTableView.beginUpdates()
+    }
+    
+    func controller(controller: NSFetchedResultsController,
+        didChangeObject anObject: AnyObject,
+        atIndexPath indexPath: NSIndexPath?,
+        forChangeType type: NSFetchedResultsChangeType,
+        newIndexPath: NSIndexPath?) {
+            
+            switch type {
+            case .Insert:
+                owner?.newsTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+                
+            case .Delete:
+                owner?.newsTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+                
+            case .Update:
+                owner?.newsTableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+            case .Move:
+                owner?.newsTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+                owner?.newsTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+            default:
+                return
+            }
+            
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        owner?.newsTableView.endUpdates()
+        if owner?.state == .Loaded {
+            owner?.delegate?.didFinishLoading()
+        }
     }
     
     // MARK: - Object for point
@@ -361,7 +310,7 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
         
         if let indexPath = owner!.newsTableView.indexPathForRowAtPoint(position) {
             
-            return news[indexPath.row]
+            return fetchedResultsController.objectAtIndexPath(indexPath) as? News
         }
         return nil
     }
@@ -380,5 +329,5 @@ class NewsDS: NSObject, UITableViewDataSource, UITableViewDelegate {
         }
         return results as? [News] ?? [News]()
     }
-
+    
 }

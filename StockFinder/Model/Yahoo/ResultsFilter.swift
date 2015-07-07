@@ -192,8 +192,8 @@ class DataFilter: NSObject {
                             let newDocument = GDataXMLDocument(rootElement: element)
                             values[filter.alias] = newDocument.XMLData()
                         }
-                        else {
-                            values[filter.alias] = Formatter.getFormattedString(element.attributeForName(attribute).stringValue())
+                        else  if let attribute = element.attributeForName(attribute)  {
+                            values[filter.alias] = Formatter.getFormattedString(attribute.stringValue())
                         }
                         
                     }
@@ -215,6 +215,9 @@ class DataFilter: NSObject {
                 
                 let newDocument = GDataXMLDocument(rootElement: parentNode)
                 values[filter.alias] = newDocument.XMLData()
+            }
+            else {
+                values[filter.alias] = nil
             }
             
         }

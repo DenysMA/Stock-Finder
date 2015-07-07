@@ -32,22 +32,20 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
         customRefreshControl.topContentInset = 0
         customRefreshControl.topContentInsetSaved = true
         refreshControl = customRefreshControl
-        refreshControl?.addTarget(self, action: "loadPresentation", forControlEvents: UIControlEvents.ValueChanged)
+        refreshControl?.addTarget(self, action: "loadCompanyNews", forControlEvents: UIControlEvents.ValueChanged)
         refreshControl?.layer.zPosition = tableView.backgroundView!.layer.zPosition + 1
-        title = "Company"
+        
+        title = "News"
         loadCompanyNews()
 
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        UIView.setAnimationsEnabled(true)
         self.parentViewController!.navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
-    override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
-    }
-    
     // MARK: - TableView Delegate
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         cell.backgroundColor = UIColor.clearColor()
@@ -55,14 +53,16 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
     
     // MARK: - StockInfoPresentation protocol
     func loadPresentation() {
+        UIView.setAnimationsEnabled(true)
         refreshControl?.beginRefreshing()
-        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        tableView.contentOffset = CGPointMake(0, -refreshControl!.frame.size.height)
         news.updateNewsSymbol(stock.symbol)
     }
     
     func loadCompanyNews() {
+        UIView.setAnimationsEnabled(true)
         refreshControl?.beginRefreshing()
-        tableView.contentOffset = CGPointMake(0, tableView.contentOffset.y - refreshControl!.frame.size.height)
+        tableView.contentOffset = CGPointMake(0, -refreshControl!.frame.size.height)
         // Load company news
         news.loadNews()
     }
@@ -75,11 +75,22 @@ class StockNewsViewController: UITableViewController, StockInfoPresentation, New
     
     func didFinishLoading() {
      
+        var contentOffset = tableView.contentOffset
         var newsSize = news.size
+        
+        if refreshControl!.refreshing {
+            refreshControl?.endRefreshing()
+        }
+        else {
+            UIView.setAnimationsEnabled(false)
+        }
+        
         tableView.beginUpdates()
         newsConstraint.constant = newsSize.height
         tableView.endUpdates()
-        refreshControl?.endRefreshing()
+        
+        tableView.setContentOffset(contentOffset, animated: false)
+        
         if news.size != newsSize {
             didFinishLoading()
         }

@@ -7,6 +7,7 @@
 //  UIImage extension to support resizing
 
 import UIKit
+import QuartzCore
 
 public extension UIImage {
     
@@ -21,11 +22,13 @@ public extension UIImage {
             size.height = self.size.height
         }
 
+        NSLog("Resized image size \(size)")
+        
         let image = self.CGImage
         let bitsPerComponent = CGImageGetBitsPerComponent(image)
         let bytesPerRow = CGImageGetBytesPerRow(image)
         let colorSpace = CGImageGetColorSpace(image)
-        let bitmapInfo = CGImageGetBitmapInfo(image)
+        let bitmapInfo = CGBitmapInfo(CGImageAlphaInfo.NoneSkipLast.rawValue)
         
         let context = CGBitmapContextCreate(nil, Int(size.width), Int(size.height), bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
         
